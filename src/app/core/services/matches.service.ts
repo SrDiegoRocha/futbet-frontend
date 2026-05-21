@@ -1,0 +1,105 @@
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { toHttpParams } from '@core/http/query-params';
+import {
+  ICreateMatchRequest,
+  IMatchListParams,
+  IMatchResponse,
+  ISetMatchResultRequest,
+  IUpdateMatchRequest,
+} from '@core/interfaces/match.interface';
+import { API_BASE_URL } from '@core/services/api-config';
+
+@Injectable({ providedIn: 'root' })
+export class MatchesService {
+  private readonly _http = inject(HttpClient);
+  private readonly _baseUrl = inject(API_BASE_URL);
+
+  public list(
+    tournamentId: string,
+    phaseId: string,
+    params?: IMatchListParams,
+  ): Observable<IMatchResponse[]> {
+    return this._http.get<IMatchResponse[]>(
+      `${this._baseUrl}/api/tournaments/${tournamentId}/phases/${phaseId}/matches`,
+      { params: toHttpParams(params ?? null) },
+    );
+  }
+
+  public getById(
+    tournamentId: string,
+    phaseId: string,
+    matchId: string,
+  ): Observable<IMatchResponse> {
+    return this._http.get<IMatchResponse>(
+      `${this._baseUrl}/api/tournaments/${tournamentId}/phases/${phaseId}/matches/${matchId}`,
+    );
+  }
+
+  public create(
+    tournamentId: string,
+    phaseId: string,
+    payload: ICreateMatchRequest,
+  ): Observable<IMatchResponse> {
+    return this._http.post<IMatchResponse>(
+      `${this._baseUrl}/api/tournaments/${tournamentId}/phases/${phaseId}/matches`,
+      payload,
+    );
+  }
+
+  public update(
+    tournamentId: string,
+    phaseId: string,
+    matchId: string,
+    payload: IUpdateMatchRequest,
+  ): Observable<IMatchResponse> {
+    return this._http.put<IMatchResponse>(
+      `${this._baseUrl}/api/tournaments/${tournamentId}/phases/${phaseId}/matches/${matchId}`,
+      payload,
+    );
+  }
+
+  public setResult(
+    tournamentId: string,
+    phaseId: string,
+    matchId: string,
+    payload: ISetMatchResultRequest,
+  ): Observable<IMatchResponse> {
+    return this._http.put<IMatchResponse>(
+      `${this._baseUrl}/api/tournaments/${tournamentId}/phases/${phaseId}/matches/${matchId}/result`,
+      payload,
+    );
+  }
+
+  public cancel(
+    tournamentId: string,
+    phaseId: string,
+    matchId: string,
+  ): Observable<IMatchResponse> {
+    return this._http.put<IMatchResponse>(
+      `${this._baseUrl}/api/tournaments/${tournamentId}/phases/${phaseId}/matches/${matchId}/cancel`,
+      {},
+    );
+  }
+
+  public remove(
+    tournamentId: string,
+    phaseId: string,
+    matchId: string,
+  ): Observable<void> {
+    return this._http.delete<void>(
+      `${this._baseUrl}/api/tournaments/${tournamentId}/phases/${phaseId}/matches/${matchId}`,
+    );
+  }
+
+  public generate(
+    tournamentId: string,
+    phaseId: string,
+  ): Observable<IMatchResponse[]> {
+    return this._http.post<IMatchResponse[]>(
+      `${this._baseUrl}/api/tournaments/${tournamentId}/phases/${phaseId}/matches/generate`,
+      {},
+    );
+  }
+}
