@@ -1,0 +1,103 @@
+<app-auth-layout title="Crie sua conta" subtitle="Comece a palpitar com seus amigos">
+  <form
+    class="auth-form"
+    [formGroup]="form"
+    (ngSubmit)="submit()"
+    novalidate
+  >
+    @if (formError()) {
+      <div class="auth-form__alert" role="alert">
+        {{ formError() }}
+      </div>
+    }
+
+    <app-input
+      formControlName="name"
+      type="text"
+      label="Nome completo"
+      placeholder="Seu nome"
+      autocomplete="name"
+      [prefixIcon]="userIcon"
+      [errorText]="nameError()"
+      [required]="true"
+    />
+
+    <app-input
+      formControlName="email"
+      type="email"
+      label="Email"
+      placeholder="voce@email.com"
+      autocomplete="email"
+      inputmode="email"
+      [prefixIcon]="mailIcon"
+      [errorText]="emailError()"
+      [required]="true"
+    />
+
+    <div class="auth-form__field-stack">
+      <app-input
+        formControlName="password"
+        type="password"
+        label="Senha"
+        placeholder="Mínimo 8 caracteres"
+        autocomplete="new-password"
+        [prefixIcon]="lockIcon"
+        [errorText]="passwordError()"
+        [required]="true"
+      />
+      @if (passwordStrength() > 0) {
+        <div class="strength" aria-live="polite">
+          <div
+            class="strength__bars"
+            [attr.data-level]="strengthClass()"
+          >
+            @for (i of [1, 2, 3, 4, 5]; track i) {
+              <span
+                class="strength__bar"
+                [class.strength__bar--filled]="i <= passwordStrength()"
+              ></span>
+            }
+          </div>
+          <span class="strength__label">{{ strengthLabel() }}</span>
+        </div>
+      }
+    </div>
+
+    <app-input
+      formControlName="confirmPassword"
+      type="password"
+      label="Confirme a senha"
+      placeholder="Repita a senha"
+      autocomplete="new-password"
+      [prefixIcon]="lockIcon"
+      [errorText]="confirmError()"
+      [required]="true"
+    />
+
+    <app-input
+      formControlName="avatarUrl"
+      type="url"
+      label="URL do avatar (opcional)"
+      placeholder="https://..."
+      autocomplete="url"
+      [prefixIcon]="imageIcon"
+      [errorText]="avatarError()"
+      helper="Deixe vazio para usar suas iniciais"
+    />
+
+    <app-button
+      type="submit"
+      variant="primary"
+      size="lg"
+      [fullWidth]="true"
+      [loading]="submitting()"
+    >
+      Cadastrar
+    </app-button>
+  </form>
+
+  <div slot="footer" class="auth-form__divider">
+    <span>Já tem uma conta?</span>
+    <a class="auth-form__link" routerLink="/auth/signin">Entre</a>
+  </div>
+</app-auth-layout>

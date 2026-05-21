@@ -1,0 +1,56 @@
+<app-auth-layout title="Entre na sua conta" subtitle="Bom te ver de volta!">
+  <form
+    class="auth-form"
+    [formGroup]="form"
+    (ngSubmit)="submit()"
+    novalidate
+  >
+    @if (formError()) {
+      <div class="auth-form__alert" role="alert">
+        {{ formError() }}
+      </div>
+    }
+
+    <app-input
+      formControlName="email"
+      type="email"
+      label="Email"
+      placeholder="voce@email.com"
+      autocomplete="email"
+      inputmode="email"
+      [prefixIcon]="mailIcon"
+      [errorText]="emailError()"
+      [required]="true"
+    />
+
+    <app-input
+      formControlName="password"
+      type="password"
+      label="Senha"
+      placeholder="••••••••"
+      autocomplete="current-password"
+      [prefixIcon]="lockIcon"
+      [errorText]="passwordError()"
+      [required]="true"
+    />
+
+    <a class="auth-form__link auth-form__link--right" routerLink="/auth/forgot-password">
+      Esqueci a senha
+    </a>
+
+    <app-button
+      type="submit"
+      variant="primary"
+      size="lg"
+      [fullWidth]="true"
+      [loading]="submitting()"
+    >
+      Entrar
+    </app-button>
+  </form>
+
+  <div slot="footer" class="auth-form__divider">
+    <span>Não tem uma conta?</span>
+    <a class="auth-form__link" routerLink="/auth/signup">Cadastre-se</a>
+  </div>
+</app-auth-layout>

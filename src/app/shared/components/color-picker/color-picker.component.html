@@ -1,0 +1,52 @@
+<div
+  class="color-picker"
+  [class.color-picker--error]="hasError()"
+  [class.color-picker--disabled]="internalDisabled()"
+>
+  @if (label()) {
+    <label class="color-picker__label" [for]="inputId()">
+      {{ label() }}
+      @if (required()) {
+        <span class="color-picker__required" aria-hidden="true">*</span>
+      }
+    </label>
+  }
+
+  <div class="color-picker__control">
+    <label
+      class="color-picker__swatch"
+      [style.background-color]="normalizedColor()"
+      [attr.aria-label]="'Abrir seletor de cor'"
+    >
+      <input
+        type="color"
+        class="color-picker__native"
+        [value]="normalizedColor()"
+        [disabled]="internalDisabled()"
+        (input)="onPickerInput($event)"
+      />
+    </label>
+    <input
+      type="text"
+      class="color-picker__text"
+      [id]="inputId()"
+      [value]="value()"
+      placeholder="#RRGGBB"
+      maxlength="7"
+      autocomplete="off"
+      spellcheck="false"
+      [disabled]="internalDisabled()"
+      [attr.aria-invalid]="hasError() ? 'true' : null"
+      (input)="onTextInput($event)"
+      (blur)="onBlur()"
+    />
+  </div>
+
+  @if (hasError()) {
+    <p class="color-picker__message color-picker__message--error" role="alert">
+      {{ errorText() }}
+    </p>
+  } @else if (helper()) {
+    <p class="color-picker__message">{{ helper() }}</p>
+  }
+</div>

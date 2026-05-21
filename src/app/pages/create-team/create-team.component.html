@@ -1,0 +1,15 @@
+<section class="page">
+  <app-page-header
+    title="Criar time"
+    subtitle="Defina nome, cores e escudo"
+    backTo="/teams"
+  />
+
+  <app-team-form
+    mode="create"
+    [submitting]="submitting()"
+    [serverError]="serverError()"
+    (saveForm)="save($event)"
+    (cancelForm)="cancel()"
+  />
+</section>

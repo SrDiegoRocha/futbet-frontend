@@ -1,0 +1,16 @@
+<div class="empty-state" role="status">
+  @if (icon(); as i) {
+    <span class="empty-state__icon" aria-hidden="true">
+      <lucide-icon [img]="i" [size]="40" />
+    </span>
+  }
+  @if (title()) {
+    <h3 class="empty-state__title">{{ title() }}</h3>
+  }
+  @if (description()) {
+    <p class="empty-state__description">{{ description() }}</p>
+  }
+  <div class="empty-state__actions">
+    <ng-content />
+  </div>
+</div>

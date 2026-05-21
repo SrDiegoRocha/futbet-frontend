@@ -1,0 +1,50 @@
+<section class="page">
+  <app-page-header
+    title="Editar time"
+    [subtitle]="team()?.name ?? ''"
+    backTo="/teams"
+  />
+
+  @if (loading()) {
+    <div class="page__skeleton">
+      <div class="u-skeleton page__skeleton-preview"></div>
+      <div class="u-skeleton page__skeleton-line"></div>
+      <div class="u-skeleton page__skeleton-line"></div>
+      <div class="u-skeleton page__skeleton-line"></div>
+      <div class="u-skeleton page__skeleton-line"></div>
+    </div>
+  } @else if (loadError(); as err) {
+    <div class="page__error" role="alert">
+      <p class="page__error-text">{{ err }}</p>
+      <app-button
+        variant="brand-outline"
+        size="md"
+        (buttonClick)="cancel()"
+      >
+        Voltar para Meus times
+      </app-button>
+    </div>
+  } @else if (team(); as t) {
+    <app-team-form
+      [initial]="t"
+      mode="edit"
+      [submitting]="submitting()"
+      [deleting]="deleting()"
+      [serverError]="serverError()"
+      (saveForm)="save($event)"
+      (deleteTeam)="requestDelete()"
+      (cancelForm)="cancel()"
+    />
+  }
+
+  <app-confirm-dialog
+    [open]="confirmDeleteOpen()"
+    title="Excluir time?"
+    description="Esta ação não pode ser desfeita. O time some das suas listas e não pode mais ser vinculado a novos torneios."
+    confirmLabel="Excluir time"
+    variant="destructive"
+    [loading]="deleting()"
+    (confirmed)="confirmDelete()"
+    (cancelled)="cancelDelete()"
+  />
+</section>

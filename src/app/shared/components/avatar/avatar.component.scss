@@ -1,0 +1,35 @@
+.avatar {
+  width: var(--avatar-size, 40px);
+  height: var(--avatar-size, 40px);
+  border-radius: var(--radius-full);
+  background-color: var(--brand-subtle);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.avatar__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.avatar__initials {
+  font-family: var(--font-sans);
+  font-weight: var(--font-semibold);
+  color: var(--brand-press);
+  font-size: var(--avatar-font, 14px);
+  letter-spacing: -0.02em;
+  user-select: none;
+}
+
+[data-theme='dark'] .avatar {
+  background-color: var(--brand);
+}
+
+[data-theme='dark'] .avatar__initials {
+  color: var(--text-on-brand);
+}

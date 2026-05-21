@@ -1,0 +1,12 @@
+<div
+  class="avatar"
+  [style.--avatar-size]="sizePx()"
+  [style.--avatar-font]="initialsFontPx()"
+  [attr.aria-label]="name() || null"
+>
+  @if (imageUrl()) {
+    <img class="avatar__image" [src]="imageUrl()" [alt]="name() ?? ''" />
+  } @else {
+    <span class="avatar__initials" aria-hidden="true">{{ initials() }}</span>
+  }
+</div>

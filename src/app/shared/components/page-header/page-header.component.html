@@ -1,0 +1,22 @@
+<header class="page-header">
+  <div class="page-header__top">
+    @if (backTo(); as path) {
+      <a
+        class="page-header__back"
+        [routerLink]="path"
+        [attr.aria-label]="backLabel()"
+      >
+        <lucide-icon [img]="arrowLeftIcon" [size]="20" />
+      </a>
+    }
+    <div class="page-header__text">
+      <h1 class="page-header__title">{{ title() }}</h1>
+      @if (subtitle()) {
+        <p class="page-header__subtitle">{{ subtitle() }}</p>
+      }
+    </div>
+  </div>
+  <div class="page-header__actions">
+    <ng-content select="[slot=actions]" />
+  </div>
+</header>

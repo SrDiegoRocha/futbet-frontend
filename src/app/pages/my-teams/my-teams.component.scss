@@ -1,0 +1,114 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding-bottom: var(--space-20);
+}
+
+.page__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.page__title {
+  font-size: var(--text-2xl);
+  line-height: var(--lh-2xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.page__subtitle {
+  font-size: var(--text-sm);
+  line-height: var(--lh-sm);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.page__grid {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.page__skeleton-card {
+  height: 168px;
+  border-radius: var(--radius-lg);
+}
+
+.page__card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border-radius: var(--radius-lg);
+}
+
+.page__card-link:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.page__error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-3);
+  padding: var(--space-8) var(--space-4);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+}
+
+.page__error-text {
+  font-size: var(--text-base);
+  color: var(--danger);
+  margin: 0;
+}
+
+.page__empty-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3) var(--space-5);
+  background-color: var(--brand);
+  color: var(--text-on-brand);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-semibold);
+  font-size: var(--text-base);
+  text-decoration: none;
+  transition:
+    background-color var(--duration-fast) var(--easing-default),
+    transform var(--duration-fast) var(--easing-default);
+  min-height: 44px;
+}
+
+.page__empty-cta:hover {
+  background-color: var(--brand-hover);
+  transform: translateY(-1px);
+}
+
+@media (min-width: 640px) {
+  .page__grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+  }
+}
+
+@media (min-width: 768px) {
+  .page__title {
+    font-size: var(--text-3xl);
+    line-height: var(--lh-3xl);
+  }
+}
+
+@media (min-width: 1024px) {
+  .page__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .page {
+    padding-bottom: var(--space-12);
+  }
+}

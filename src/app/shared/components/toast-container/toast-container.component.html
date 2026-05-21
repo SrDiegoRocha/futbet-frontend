@@ -1,0 +1,39 @@
+<div class="toast-container" role="region" aria-live="polite" aria-label="Notificações">
+  @for (toast of toasts(); track toast.id) {
+    <div
+      class="toast"
+      [class.toast--success]="toast.type === 'success'"
+      [class.toast--error]="toast.type === 'error'"
+      [class.toast--info]="toast.type === 'info'"
+      [class.toast--warning]="toast.type === 'warning'"
+      role="status"
+      @toastSlide
+    >
+      <span class="toast__icon" aria-hidden="true">
+        @switch (toast.type) {
+          @case ('success') {
+            <lucide-icon [img]="successIcon" [size]="18" />
+          }
+          @case ('error') {
+            <lucide-icon [img]="errorIcon" [size]="18" />
+          }
+          @case ('warning') {
+            <lucide-icon [img]="warningIcon" [size]="18" />
+          }
+          @case ('info') {
+            <lucide-icon [img]="infoIcon" [size]="18" />
+          }
+        }
+      </span>
+      <p class="toast__message">{{ toast.message }}</p>
+      <button
+        type="button"
+        class="toast__close"
+        aria-label="Fechar notificação"
+        (click)="dismiss(toast.id)"
+      >
+        <lucide-icon [img]="closeIcon" [size]="14" />
+      </button>
+    </div>
+  }
+</div>

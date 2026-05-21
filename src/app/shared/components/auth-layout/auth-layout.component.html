@@ -1,0 +1,22 @@
+<div class="auth-layout">
+  <div class="auth-layout__backdrop" aria-hidden="true"></div>
+  <div class="auth-layout__shell">
+    <header class="auth-layout__header">
+      <app-logo [size]="logoSize()" variant="lockup" ariaLabel="FutBet" />
+      @if (title()) {
+        <h1 class="auth-layout__title">{{ title() }}</h1>
+      }
+      @if (subtitle()) {
+        <p class="auth-layout__subtitle">{{ subtitle() }}</p>
+      }
+    </header>
+
+    <section class="auth-layout__main">
+      <ng-content />
+    </section>
+
+    <footer class="auth-layout__footer">
+      <ng-content select="[slot=footer]" />
+    </footer>
+  </div>
+</div>

@@ -1,0 +1,67 @@
+<div
+  class="field"
+  [class.field--focused]="focused()"
+  [class.field--error]="hasError()"
+  [class.field--disabled]="internalDisabled()"
+  [class.field--with-prefix]="hasPrefixIcon()"
+>
+  @if (label()) {
+    <label class="field__label" [for]="inputId()">
+      {{ label() }}
+      @if (required()) {
+        <span class="field__required" aria-hidden="true">*</span>
+      }
+    </label>
+  }
+
+  <div class="field__control">
+    @if (prefixIcon(); as icon) {
+      <span class="field__prefix" aria-hidden="true">
+        <lucide-icon [img]="icon" [size]="18" />
+      </span>
+    }
+
+    <input
+      class="field__input"
+      [id]="inputId()"
+      [type]="resolvedType()"
+      [value]="value()"
+      [placeholder]="placeholder()"
+      [disabled]="internalDisabled()"
+      [required]="required()"
+      [attr.autocomplete]="autocomplete()"
+      [attr.inputmode]="inputmode()"
+      [attr.aria-invalid]="hasError() ? 'true' : null"
+      [attr.aria-describedby]="describedBy()"
+      (input)="handleInput($event)"
+      (focus)="handleFocus()"
+      (blur)="handleBlur()"
+    />
+
+    @if (isPassword()) {
+      <button
+        type="button"
+        class="field__suffix-button"
+        [attr.aria-label]="showPassword() ? 'Ocultar senha' : 'Mostrar senha'"
+        [attr.aria-pressed]="showPassword()"
+        (click)="togglePassword()"
+      >
+        @if (showPassword()) {
+          <lucide-icon [img]="eyeOffIcon" [size]="18" />
+        } @else {
+          <lucide-icon [img]="eyeIcon" [size]="18" />
+        }
+      </button>
+    }
+  </div>
+
+  @if (hasError()) {
+    <p class="field__error" [id]="errorId()" role="alert">
+      {{ errorText() }}
+    </p>
+  } @else if (helper()) {
+    <p class="field__helper" [id]="helperId()">
+      {{ helper() }}
+    </p>
+  }
+</div>

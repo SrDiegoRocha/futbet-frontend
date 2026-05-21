@@ -1,0 +1,68 @@
+<aside class="sidebar" aria-label="Navegação lateral">
+  <div class="sidebar__brand">
+    <app-logo [size]="36" variant="lockup" />
+  </div>
+
+  <nav class="sidebar__nav" aria-label="Páginas">
+    <a
+      class="sidebar__item"
+      routerLink="/tournaments"
+      [routerLinkActiveOptions]="{ exact: true }"
+      routerLinkActive="sidebar__item--active"
+    >
+      <lucide-icon [img]="trophyIcon" [size]="20" />
+      <span>Meus torneios</span>
+    </a>
+    <a
+      class="sidebar__item"
+      routerLink="/tournaments/public"
+      routerLinkActive="sidebar__item--active"
+    >
+      <lucide-icon [img]="globeIcon" [size]="20" />
+      <span>Públicos</span>
+    </a>
+    <a
+      class="sidebar__item"
+      routerLink="/teams"
+      routerLinkActive="sidebar__item--active"
+    >
+      <lucide-icon [img]="shieldIcon" [size]="20" />
+      <span>Times</span>
+    </a>
+  </nav>
+
+  <div class="sidebar__footer">
+    <button
+      type="button"
+      class="sidebar__theme"
+      (click)="toggleTheme()"
+      [attr.aria-label]="'Alternar tema'"
+    >
+      @if (isDark()) {
+        <lucide-icon [img]="sunIcon" [size]="18" />
+      } @else {
+        <lucide-icon [img]="moonIcon" [size]="18" />
+      }
+      <span>{{ isDark() ? 'Tema claro' : 'Tema escuro' }}</span>
+    </button>
+
+    <div class="sidebar__user">
+      <app-avatar
+        [name]="userName()"
+        [imageUrl]="userAvatar()"
+        [size]="36"
+      />
+      <div class="sidebar__user-info">
+        <p class="sidebar__user-name">{{ userName() }}</p>
+        <button
+          type="button"
+          class="sidebar__signout"
+          (click)="signOut()"
+        >
+          <lucide-icon [img]="logOutIcon" [size]="14" />
+          Sair
+        </button>
+      </div>
+    </div>
+  </div>
+</aside>

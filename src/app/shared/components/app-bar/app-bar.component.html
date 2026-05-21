@@ -1,0 +1,90 @@
+<header class="app-bar">
+  <div class="app-bar__inner">
+    <a class="app-bar__brand" href="/" aria-label="Ir para o início">
+      <app-logo [size]="32" variant="lockup" />
+    </a>
+
+    <button
+      type="button"
+      class="app-bar__avatar-btn"
+      [attr.aria-label]="'Menu da conta'"
+      [attr.aria-expanded]="menuOpen()"
+      aria-haspopup="menu"
+      (click)="toggleMenu()"
+    >
+      <app-avatar
+        [name]="userName()"
+        [imageUrl]="userAvatar()"
+        [size]="36"
+      />
+    </button>
+  </div>
+
+  @if (menuOpen()) {
+    <div
+      class="app-bar__backdrop"
+      (click)="closeMenu()"
+      aria-hidden="true"
+    ></div>
+    <div class="app-bar__menu" role="menu">
+      <div class="app-bar__menu-user">
+        <app-avatar
+          [name]="userName()"
+          [imageUrl]="userAvatar()"
+          [size]="48"
+        />
+        <div class="app-bar__menu-user-info">
+          <p class="app-bar__menu-name">{{ userName() }}</p>
+          <p class="app-bar__menu-email">{{ userEmail() }}</p>
+        </div>
+      </div>
+
+      <div class="app-bar__menu-divider"></div>
+
+      <div class="app-bar__menu-section">
+        <p class="app-bar__menu-label">Tema</p>
+        <div class="app-bar__theme-group" role="group">
+          <button
+            type="button"
+            class="app-bar__theme-btn"
+            [class.app-bar__theme-btn--active]="themeMode() === 'light'"
+            (click)="setTheme('light')"
+          >
+            <lucide-icon [img]="sunIcon" [size]="14" />
+            Claro
+          </button>
+          <button
+            type="button"
+            class="app-bar__theme-btn"
+            [class.app-bar__theme-btn--active]="themeMode() === 'dark'"
+            (click)="setTheme('dark')"
+          >
+            <lucide-icon [img]="moonIcon" [size]="14" />
+            Escuro
+          </button>
+          <button
+            type="button"
+            class="app-bar__theme-btn"
+            [class.app-bar__theme-btn--active]="themeMode() === 'system'"
+            (click)="setTheme('system')"
+          >
+            <lucide-icon [img]="monitorIcon" [size]="14" />
+            Sistema
+          </button>
+        </div>
+      </div>
+
+      <div class="app-bar__menu-divider"></div>
+
+      <button
+        type="button"
+        class="app-bar__menu-item"
+        role="menuitem"
+        (click)="signOut()"
+      >
+        <lucide-icon [img]="logOutIcon" [size]="18" />
+        Sair
+      </button>
+    </div>
+  }
+</header>

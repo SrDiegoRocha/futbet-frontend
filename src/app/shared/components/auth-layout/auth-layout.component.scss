@@ -1,0 +1,106 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+  min-height: 100vh;
+}
+
+.auth-layout {
+  position: relative;
+  display: flex;
+  min-height: 100dvh;
+  min-height: 100vh;
+  padding-inline: var(--space-4);
+  padding-block: max(var(--space-6), var(--safe-top))
+    max(var(--space-6), var(--safe-bottom));
+  padding-inline-start: max(var(--space-4), var(--safe-left));
+  padding-inline-end: max(var(--space-4), var(--safe-right));
+  background-color: var(--bg-base);
+}
+
+.auth-layout__backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at top right,
+      color-mix(in srgb, var(--brand) 14%, transparent) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at bottom left,
+      color-mix(in srgb, var(--brand) 8%, transparent) 0%,
+      transparent 60%
+    );
+  z-index: 0;
+}
+
+.auth-layout__shell {
+  position: relative;
+  z-index: 1;
+  margin-inline: auto;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  align-self: center;
+}
+
+.auth-layout__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  text-align: center;
+}
+
+.auth-layout__title {
+  margin: 0;
+  font-size: var(--text-2xl);
+  line-height: var(--lh-2xl);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.auth-layout__subtitle {
+  margin: 0;
+  font-size: var(--text-base);
+  line-height: var(--lh-base);
+  color: var(--text-secondary);
+  max-width: 36ch;
+}
+
+.auth-layout__main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.auth-layout__footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.auth-layout__footer:empty {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .auth-layout {
+    padding-block: var(--space-12);
+  }
+
+  .auth-layout__shell {
+    max-width: 440px;
+    gap: var(--space-10);
+  }
+
+  .auth-layout__title {
+    font-size: var(--text-3xl);
+    line-height: var(--lh-3xl);
+  }
+}

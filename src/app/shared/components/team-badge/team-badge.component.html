@@ -1,0 +1,22 @@
+<div
+  class="team-badge"
+  [style.--team-badge-size]="sizePx()"
+  [style.--team-badge-font]="fontPx()"
+>
+  @if (resolvedBadgeUrl(); as url) {
+    <img
+      class="team-badge__image"
+      [src]="url"
+      [alt]="name() ?? ''"
+    />
+  } @else {
+    <div
+      class="team-badge__fallback"
+      [style.--team-primary]="primaryColor()"
+      [style.--team-secondary]="secondaryColor()"
+      aria-hidden="true"
+    >
+      <span class="team-badge__initials">{{ initials() }}</span>
+    </div>
+  }
+</div>

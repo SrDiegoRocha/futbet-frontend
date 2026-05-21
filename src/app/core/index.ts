@@ -20,6 +20,8 @@ export * from './services/ranking.service';
 export * from './auth/auth-state';
 export * from './auth/token-storage';
 export * from './auth/token-refresher';
+export * from './auth/guards/auth.guard';
+export * from './auth/guards/no-auth.guard';
 
 export * from './interceptors/auth-interceptor';
 export * from './interceptors/error-interceptor';

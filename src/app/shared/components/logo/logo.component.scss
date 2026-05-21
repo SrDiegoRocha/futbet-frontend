@@ -1,0 +1,29 @@
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--logo-gap, var(--space-3));
+  line-height: 1;
+}
+
+.logo__symbol {
+  width: var(--logo-size, 40px);
+  height: var(--logo-size, 40px);
+  flex-shrink: 0;
+}
+
+.logo__wordmark {
+  font-family: var(--font-sans);
+  font-weight: var(--font-bold);
+  font-size: var(--logo-wordmark-size, 26px);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  user-select: none;
+}
+
+.logo__wordmark-fut {
+  color: var(--brand);
+}
+
+.logo__wordmark-bet {
+  color: var(--text-primary);
+}

@@ -1,0 +1,112 @@
+.team-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.team-form__preview {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  transition: background-color var(--duration-base) var(--easing-default);
+}
+
+[data-theme='dark'] .team-form__preview {
+  background-color: var(--bg-elevated);
+}
+
+.team-form__preview-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.team-form__preview-title {
+  font-size: var(--text-lg);
+  line-height: var(--lh-lg);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.team-form__preview-short {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: var(--font-medium);
+}
+
+.team-form__alert {
+  background-color: color-mix(in srgb, var(--danger) 12%, transparent);
+  color: var(--danger);
+  border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+  line-height: var(--lh-sm);
+}
+
+.team-form__colors {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+
+.team-form__actions {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.team-form__danger {
+  margin-top: var(--space-6);
+  padding: var(--space-4);
+  border: 1px solid color-mix(in srgb, var(--danger) 35%, transparent);
+  border-radius: var(--radius-lg);
+  background-color: color-mix(in srgb, var(--danger) 5%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: flex-start;
+}
+
+.team-form__danger-title {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--danger);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.team-form__danger-text {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: var(--lh-base);
+}
+
+@media (min-width: 640px) {
+  .team-form__colors {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+  }
+
+  .team-form__actions {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+
+  .team-form__actions app-button {
+    min-width: 160px;
+  }
+}

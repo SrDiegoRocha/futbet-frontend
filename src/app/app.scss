@@ -1,0 +1,18 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+  min-height: 100vh;
+}
+
+.app-shell {
+  position: relative;
+  min-height: 100dvh;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.app-shell > :is(app-sign-in, app-sign-up, app-home) {
+  display: block;
+  min-height: 100dvh;
+  min-height: 100vh;
+}

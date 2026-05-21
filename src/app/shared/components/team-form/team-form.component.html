@@ -1,0 +1,117 @@
+<form
+  class="team-form"
+  [formGroup]="form"
+  (ngSubmit)="onSubmit()"
+  novalidate
+>
+  <div class="team-form__preview">
+    <app-team-badge
+      [name]="previewName()"
+      [shortName]="previewShortName()"
+      [badgeUrl]="previewBadgeUrl()"
+      [primaryColor]="previewPrimary()"
+      [secondaryColor]="previewSecondary()"
+      [size]="96"
+    />
+    <div class="team-form__preview-info">
+      <p class="team-form__preview-title">{{ previewName() }}</p>
+      @if (previewShortName(); as short) {
+        <p class="team-form__preview-short">{{ short }}</p>
+      }
+    </div>
+  </div>
+
+  @if (serverError(); as err) {
+    <div class="team-form__alert" role="alert">{{ err }}</div>
+  }
+
+  <app-input
+    formControlName="name"
+    type="text"
+    label="Nome"
+    placeholder="Ex.: Flamengo"
+    autocomplete="off"
+    [prefixIcon]="trophyIcon"
+    [errorText]="nameError()"
+    [required]="true"
+  />
+
+  <app-input
+    formControlName="shortName"
+    type="text"
+    label="Sigla (opcional)"
+    placeholder="2 a 5 caracteres (ex.: FLA)"
+    autocomplete="off"
+    [prefixIcon]="tagIcon"
+    [errorText]="shortNameError()"
+    helper="Aparece em placares quando o nome do time não cabe."
+  />
+
+  <app-input
+    formControlName="badgeUrl"
+    type="url"
+    label="URL do escudo (opcional)"
+    placeholder="https://..."
+    autocomplete="off"
+    [prefixIcon]="imageIcon"
+    [errorText]="badgeUrlError()"
+    helper="Se vazio, mostra um fallback com as cores do time."
+  />
+
+  <div class="team-form__colors">
+    <app-color-picker
+      formControlName="primaryColor"
+      label="Cor primária"
+      [errorText]="primaryError()"
+      [required]="true"
+    />
+    <app-color-picker
+      formControlName="secondaryColor"
+      label="Cor secundária"
+      [errorText]="secondaryError()"
+      [required]="true"
+    />
+  </div>
+
+  <div class="team-form__actions">
+    <app-button
+      type="button"
+      variant="ghost"
+      size="lg"
+      [disabled]="submitting() || deleting()"
+      (buttonClick)="onCancel()"
+    >
+      Cancelar
+    </app-button>
+    <app-button
+      type="submit"
+      variant="primary"
+      size="lg"
+      [loading]="submitting()"
+      [disabled]="deleting()"
+    >
+      {{ submitLabel() }}
+    </app-button>
+  </div>
+
+  @if (mode() === 'edit') {
+    <div class="team-form__danger">
+      <p class="team-form__danger-title">Zona de perigo</p>
+      <p class="team-form__danger-text">
+        Excluir o time é uma ação permanente do seu ponto de vista. Times
+        excluídos não aparecem mais em listas e não podem ser vinculados a
+        novos torneios.
+      </p>
+      <app-button
+        type="button"
+        variant="destructive"
+        size="md"
+        [loading]="deleting()"
+        [disabled]="submitting()"
+        (buttonClick)="onDelete()"
+      >
+        Excluir time
+      </app-button>
+    </div>
+  }
+</form>

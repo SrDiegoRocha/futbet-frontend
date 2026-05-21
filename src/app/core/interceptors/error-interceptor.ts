@@ -32,7 +32,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
       if (!state.refreshToken()) {
         state.clear();
-        void router.navigate(['/login']);
+        void router.navigate(['/auth/signin']);
         return throwError(() => new ApiException(error));
       }
 
@@ -46,7 +46,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         ),
         catchError((refreshError) => {
           state.clear();
-          void router.navigate(['/login']);
+          void router.navigate(['/auth/signin']);
           const wrapped =
             refreshError instanceof HttpErrorResponse
               ? new ApiException(refreshError)

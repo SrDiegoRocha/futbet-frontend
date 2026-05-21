@@ -1,0 +1,16 @@
+<article class="team-card">
+  <app-team-badge
+    [name]="team().name"
+    [shortName]="team().shortName"
+    [badgeUrl]="team().badgeUrl"
+    [primaryColor]="team().primaryColor"
+    [secondaryColor]="team().secondaryColor"
+    [size]="72"
+  />
+  <div class="team-card__body">
+    <h3 class="team-card__name">{{ team().name }}</h3>
+    @if (team().shortName) {
+      <p class="team-card__short">{{ team().shortName }}</p>
+    }
+  </div>
+</article>

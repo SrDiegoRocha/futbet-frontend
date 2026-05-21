@@ -1,0 +1,37 @@
+<section class="page">
+  <header class="page__header">
+    <h1 class="page__title">Meus torneios</h1>
+    <p class="page__subtitle">Torneios criados por você</p>
+  </header>
+
+  @if (loading()) {
+    <div class="page__grid">
+      @for (i of [1, 2, 3, 4]; track i) {
+        <div class="u-skeleton page__skeleton-card"></div>
+      }
+    </div>
+  } @else if (errorMessage(); as err) {
+    <div class="page__error" role="alert">
+      <p class="page__error-text">{{ err }}</p>
+      <app-button
+        variant="brand-outline"
+        size="md"
+        (buttonClick)="retry()"
+      >
+        Tentar novamente
+      </app-button>
+    </div>
+  } @else if (isEmpty()) {
+    <app-empty-state
+      [icon]="trophyIcon"
+      title="Você ainda não criou nenhum torneio"
+      description="Quando criar seu primeiro torneio, ele aparece aqui."
+    />
+  } @else {
+    <div class="page__grid" [@listStagger]="items().length">
+      @for (t of items(); track t.id) {
+        <app-tournament-card [tournament]="t" />
+      }
+    </div>
+  }
+</section>

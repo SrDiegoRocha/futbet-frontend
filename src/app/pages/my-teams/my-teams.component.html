@@ -1,0 +1,54 @@
+<section class="page">
+  <header class="page__header">
+    <h1 class="page__title">Meus times</h1>
+    <p class="page__subtitle">Times cadastrados pra usar nos torneios</p>
+  </header>
+
+  @if (loading()) {
+    <div class="page__grid">
+      @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+        <div class="u-skeleton page__skeleton-card"></div>
+      }
+    </div>
+  } @else if (errorMessage(); as err) {
+    <div class="page__error" role="alert">
+      <p class="page__error-text">{{ err }}</p>
+      <app-button
+        variant="brand-outline"
+        size="md"
+        (buttonClick)="retry()"
+      >
+        Tentar novamente
+      </app-button>
+    </div>
+  } @else if (isEmpty()) {
+    <app-empty-state
+      [icon]="shieldIcon"
+      title="Você ainda não cadastrou nenhum time"
+      description="Cadastre times para depois vinculá-los aos seus torneios."
+    >
+      <a class="page__empty-cta" routerLink="/teams/new">
+        Cadastrar primeiro time
+      </a>
+    </app-empty-state>
+  } @else {
+    <div class="page__grid" [@listStagger]="items().length">
+      @for (t of items(); track t.id) {
+        <a
+          class="page__card-link"
+          [routerLink]="['/teams', t.id]"
+          [attr.aria-label]="'Editar time ' + t.name"
+        >
+          <app-team-card [team]="t" />
+        </a>
+      }
+    </div>
+  }
+</section>
+
+<app-fab
+  routerPath="/teams/new"
+  ariaLabel="Cadastrar novo time"
+  label="Novo time"
+  [icon]="plusIcon"
+/>

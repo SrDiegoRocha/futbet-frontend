@@ -1,0 +1,63 @@
+:host {
+  display: contents;
+}
+
+.fab {
+  position: fixed;
+  bottom: calc(64px + var(--safe-bottom) + var(--space-4));
+  right: var(--space-4);
+  right: max(var(--space-4), var(--safe-right));
+  z-index: var(--z-dropdown);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-width: 56px;
+  height: 56px;
+  padding-inline: 0;
+  background-color: var(--brand);
+  color: var(--text-on-brand);
+  border: 0;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: var(--font-semibold);
+  font-size: var(--text-base);
+  transition:
+    transform var(--duration-fast) var(--easing-default),
+    box-shadow var(--duration-fast) var(--easing-default),
+    background-color var(--duration-fast) var(--easing-default);
+}
+
+.fab:hover {
+  background-color: var(--brand-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-xl);
+}
+
+.fab:active {
+  transform: translateY(0);
+  background-color: var(--brand-press);
+}
+
+.fab:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 3px;
+}
+
+.fab--extended {
+  padding-inline: var(--space-5);
+}
+
+.fab__label {
+  white-space: nowrap;
+}
+
+@media (min-width: 1024px) {
+  .fab {
+    bottom: var(--space-6);
+    right: var(--space-6);
+  }
+}

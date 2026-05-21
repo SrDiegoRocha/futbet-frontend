@@ -1,0 +1,39 @@
+<article class="tournament-card">
+  <header class="tournament-card__header">
+    <span [class]="statusClass()">{{ statusLabel() }}</span>
+    <span
+      class="tournament-card__privacy"
+      [attr.aria-label]="privacyLabel()"
+      [title]="privacyLabel()"
+    >
+      @if (tournament().privacy === 'PRIVATE') {
+        <lucide-icon [img]="lockIcon" [size]="14" />
+      } @else {
+        <lucide-icon [img]="globeIcon" [size]="14" />
+      }
+    </span>
+  </header>
+
+  <div class="tournament-card__body">
+    <h3 class="tournament-card__name">{{ tournament().name }}</h3>
+    @if (tournament().description) {
+      <p class="tournament-card__description">{{ tournament().description }}</p>
+    }
+    @if (showOwner()) {
+      <p class="tournament-card__owner">
+        por <span>{{ tournament().owner.name }}</span>
+      </p>
+    }
+  </div>
+
+  <footer class="tournament-card__footer">
+    <span class="tournament-card__metric" [attr.aria-label]="'Participantes'">
+      <lucide-icon [img]="usersIcon" [size]="14" />
+      {{ memberCountLabel() }}
+    </span>
+    <span class="tournament-card__metric" [attr.aria-label]="'Times'">
+      <lucide-icon [img]="trophyIcon" [size]="14" />
+      {{ teamCountLabel() }}
+    </span>
+  </footer>
+</article>

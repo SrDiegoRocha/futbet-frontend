@@ -1,0 +1,26 @@
+@if (routerPath(); as path) {
+  <a
+    class="fab"
+    [class.fab--extended]="label() !== null"
+    [routerLink]="path"
+    [attr.aria-label]="ariaLabel()"
+  >
+    <lucide-icon [img]="icon()" [size]="22" />
+    @if (label(); as text) {
+      <span class="fab__label">{{ text }}</span>
+    }
+  </a>
+} @else {
+  <button
+    type="button"
+    class="fab"
+    [class.fab--extended]="label() !== null"
+    [attr.aria-label]="ariaLabel()"
+    (click)="onClick($event)"
+  >
+    <lucide-icon [img]="icon()" [size]="22" />
+    @if (label(); as text) {
+      <span class="fab__label">{{ text }}</span>
+    }
+  </button>
+}
