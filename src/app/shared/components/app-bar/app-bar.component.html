@@ -4,20 +4,40 @@
       <app-logo [size]="32" variant="lockup" />
     </a>
 
-    <button
-      type="button"
-      class="app-bar__avatar-btn"
-      [attr.aria-label]="'Menu da conta'"
-      [attr.aria-expanded]="menuOpen()"
-      aria-haspopup="menu"
-      (click)="toggleMenu()"
-    >
-      <app-avatar
-        [name]="userName()"
-        [imageUrl]="userAvatar()"
-        [size]="36"
-      />
-    </button>
+    <div class="app-bar__actions">
+      <a
+        class="app-bar__icon-btn"
+        routerLink="/predictions/upcoming"
+        aria-label="Próximos palpites"
+        title="Próximos palpites"
+      >
+        <lucide-icon [img]="bellIcon" [size]="20" />
+      </a>
+
+      <a
+        class="app-bar__icon-btn"
+        routerLink="/join"
+        aria-label="Entrar em torneio com código"
+        title="Entrar com código"
+      >
+        <lucide-icon [img]="ticketIcon" [size]="20" />
+      </a>
+
+      <button
+        type="button"
+        class="app-bar__avatar-btn"
+        [attr.aria-label]="'Menu da conta'"
+        [attr.aria-expanded]="menuOpen()"
+        aria-haspopup="menu"
+        (click)="toggleMenu()"
+      >
+        <app-avatar
+          [name]="userName()"
+          [imageUrl]="userAvatar()"
+          [size]="36"
+        />
+      </button>
+    </div>
   </div>
 
   @if (menuOpen()) {
@@ -75,6 +95,16 @@
       </div>
 
       <div class="app-bar__menu-divider"></div>
+
+      <a
+        class="app-bar__menu-item"
+        routerLink="/settings"
+        role="menuitem"
+        (click)="closeMenu()"
+      >
+        <lucide-icon [img]="settingsIcon" [size]="18" />
+        Configurações
+      </a>
 
       <button
         type="button"

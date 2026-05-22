@@ -36,6 +36,18 @@
   height: 152px;
 }
 
+.page__card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border-radius: var(--radius-lg);
+}
+
+.page__card-link:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
 .page__error {
   display: flex;
   flex-direction: column;

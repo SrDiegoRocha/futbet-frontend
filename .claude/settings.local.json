@@ -6,7 +6,8 @@
       "Bash(npm run *)",
       "Bash(npx eslint *)",
       "Bash(npx ng *)",
-      "Bash(npm start *)"
+      "Bash(npm start *)",
+      "Bash(grep -n \"result\\\\|cancel\\\\|Result\" \"C:\\\\\\\\Users\\\\\\\\diego\\\\\\\\WebstormProjects\\\\\\\\futbet\\\\\\\\API.md\")"
     ]
   }
 }

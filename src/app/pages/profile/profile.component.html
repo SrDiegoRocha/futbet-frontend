@@ -1,0 +1,89 @@
+<section class="page">
+  <app-page-header title="Perfil" backTo="/tournaments" />
+
+  @if (user(); as u) {
+    <article class="hero">
+      <app-avatar
+        [name]="userName()"
+        [imageUrl]="userAvatar()"
+        [size]="96"
+      />
+      <div class="hero__info">
+        <h2 class="hero__name">{{ userName() }}</h2>
+        <p class="hero__email">{{ userEmail() }}</p>
+        <div class="hero__badges">
+          <span class="hero__badge">{{ userRoleLabel() }}</span>
+          @if (memberSinceLabel()) {
+            <span class="hero__since">desde {{ memberSinceLabel() }}</span>
+          }
+        </div>
+      </div>
+    </article>
+
+    <div class="stats">
+      <article class="stat-card">
+        <span class="stat-card__icon" aria-hidden="true">
+          <lucide-icon [img]="trophyIcon" [size]="22" />
+        </span>
+        <div class="stat-card__body">
+          @if (loading()) {
+            <span class="u-skeleton stat-card__value-skeleton"></span>
+          } @else {
+            <span class="stat-card__value">{{ totalTournaments() }}</span>
+          }
+          <span class="stat-card__label">
+            torneios ({{ ownedCount() }} dono, {{ joinedCount() }} membro)
+          </span>
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <span class="stat-card__icon" aria-hidden="true">
+          <lucide-icon [img]="sparklesIcon" [size]="22" />
+        </span>
+        <div class="stat-card__body">
+          @if (loading()) {
+            <span class="u-skeleton stat-card__value-skeleton"></span>
+          } @else {
+            <span class="stat-card__value">{{ totalPredictions() }}</span>
+          }
+          <span class="stat-card__label">palpites lançados</span>
+        </div>
+      </article>
+
+      <article class="stat-card stat-card--accent">
+        <span class="stat-card__icon" aria-hidden="true">
+          <lucide-icon [img]="usersIcon" [size]="22" />
+        </span>
+        <div class="stat-card__body">
+          @if (loading()) {
+            <span class="u-skeleton stat-card__value-skeleton"></span>
+          } @else {
+            <span class="stat-card__value">{{ totalPoints() }}</span>
+          }
+          <span class="stat-card__label">pontos acumulados</span>
+        </div>
+      </article>
+    </div>
+
+    @if (loadError(); as err) {
+      <div class="page__error" role="alert">
+        <p class="page__error-text">{{ err }}</p>
+      </div>
+    }
+
+    <article class="card">
+      <header class="card__header">
+        <h3 class="card__title">Conta</h3>
+        <p class="card__subtitle">
+          Edição de perfil ainda não está disponível. Tema e logout estão em
+          Configurações.
+        </p>
+      </header>
+      <a class="card__link" routerLink="/settings">
+        <lucide-icon [img]="settingsIcon" [size]="16" />
+        Ir para Configurações
+      </a>
+    </article>
+  }
+</section>

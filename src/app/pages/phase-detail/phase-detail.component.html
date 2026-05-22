@@ -1,0 +1,230 @@
+<section class="page">
+  <app-page-header
+    title="Fase"
+    [subtitle]="phase()?.name ?? ''"
+    [backTo]="backToHref()"
+  />
+
+  @if (loading()) {
+    <div class="page__skeleton">
+      <div class="u-skeleton page__skeleton-hero"></div>
+      <div class="u-skeleton page__skeleton-line"></div>
+      <div class="u-skeleton page__skeleton-line"></div>
+    </div>
+  } @else if (loadError(); as err) {
+    <div class="page__error" role="alert">
+      <p class="page__error-text">{{ err }}</p>
+    </div>
+  } @else if (phase(); as p) {
+    <article class="phase-detail__hero">
+      <div class="phase-detail__badges">
+        <span [class]="typeClass()">
+          <lucide-icon [img]="typeIconFor(p.phaseType)" [size]="14" />
+          {{ typeLabel() }}
+        </span>
+        <span class="phase-detail__position">
+          Posição {{ p.position + 1 }}
+        </span>
+      </div>
+
+      <h2 class="phase-detail__name">{{ p.name }}</h2>
+
+      <p class="phase-detail__summary">
+        {{ legLabel() }} · {{ genLabel() }}
+      </p>
+
+      <div class="phase-detail__meta">
+        <span class="phase-detail__meta-item">
+          <strong>{{ p.teamCount }}</strong> times
+        </span>
+        @if (p.phaseType === 'GROUPS') {
+          <span class="phase-detail__meta-sep">·</span>
+          <span class="phase-detail__meta-item">
+            <strong>{{ p.groupCount }}</strong> grupos
+          </span>
+        }
+      </div>
+    </article>
+
+    <article class="phase-detail__card">
+      <header class="phase-detail__card-header">
+        <h3 class="phase-detail__card-title">Configurações</h3>
+      </header>
+      <dl class="phase-detail__specs">
+        <div class="phase-detail__spec">
+          <dt>Confronto</dt>
+          <dd>{{ legLabel() }}</dd>
+        </div>
+        <div class="phase-detail__spec">
+          <dt>Geração</dt>
+          <dd>{{ genLabel() }}</dd>
+        </div>
+        @if (p.phaseType === 'GROUPS') {
+          <div class="phase-detail__spec">
+            <dt>Classif. por grupo</dt>
+            <dd>{{ p.qualifiersPerGroup ?? '—' }}</dd>
+          </div>
+          <div class="phase-detail__spec">
+            <dt>Jogos só dentro do grupo</dt>
+            <dd>{{ p.playsInsideGroupOnly ? 'Sim' : 'Não' }}</dd>
+          </div>
+        }
+        @if (p.phaseType === 'KNOCKOUT') {
+          <div class="phase-detail__spec">
+            <dt>Disputa de 3º lugar</dt>
+            <dd>{{ p.hasThirdPlace ? 'Sim' : 'Não' }}</dd>
+          </div>
+        }
+      </dl>
+    </article>
+
+    <nav class="phase-detail__quick-nav" aria-label="Sub-recursos da fase">
+      <a
+        class="phase-detail__quick-link"
+        [routerLink]="[
+          '/tournaments',
+          tournament()?.id,
+          'phases',
+          p.id,
+          'teams'
+        ]"
+      >
+        <span class="phase-detail__quick-icon" aria-hidden="true">
+          <lucide-icon [img]="shieldIcon" [size]="20" />
+        </span>
+        <div class="phase-detail__quick-info">
+          <span class="phase-detail__quick-count">{{ p.teamCount }}</span>
+          <span class="phase-detail__quick-label">Times da fase</span>
+        </div>
+        <lucide-icon
+          class="phase-detail__quick-chevron"
+          [img]="chevronRightIcon"
+          [size]="18"
+          aria-hidden="true"
+        />
+      </a>
+
+      @if (p.phaseType === 'GROUPS') {
+        <a
+          class="phase-detail__quick-link"
+          [routerLink]="[
+            '/tournaments',
+            tournament()?.id,
+            'phases',
+            p.id,
+            'groups'
+          ]"
+        >
+          <span class="phase-detail__quick-icon" aria-hidden="true">
+            <lucide-icon [img]="gridIcon" [size]="20" />
+          </span>
+          <div class="phase-detail__quick-info">
+            <span class="phase-detail__quick-count">{{ p.groupCount }}</span>
+            <span class="phase-detail__quick-label">Grupos</span>
+          </div>
+          <lucide-icon
+            class="phase-detail__quick-chevron"
+            [img]="chevronRightIcon"
+            [size]="18"
+            aria-hidden="true"
+          />
+        </a>
+      }
+      <a
+        class="phase-detail__quick-link"
+        [routerLink]="[
+          '/tournaments',
+          tournament()?.id,
+          'phases',
+          p.id,
+          'zones'
+        ]"
+      >
+        <span class="phase-detail__quick-icon" aria-hidden="true">
+          <lucide-icon [img]="workflowIcon" [size]="20" />
+        </span>
+        <div class="phase-detail__quick-info">
+          <span class="phase-detail__quick-label-strong">Zonas</span>
+          <span class="phase-detail__quick-label">Regras de avanço</span>
+        </div>
+        <lucide-icon
+          class="phase-detail__quick-chevron"
+          [img]="chevronRightIcon"
+          [size]="18"
+          aria-hidden="true"
+        />
+      </a>
+      <a
+        class="phase-detail__quick-link"
+        [routerLink]="[
+          '/tournaments',
+          tournament()?.id,
+          'phases',
+          p.id,
+          'matches'
+        ]"
+      >
+        <span class="phase-detail__quick-icon" aria-hidden="true">
+          <lucide-icon [img]="calendarIcon" [size]="20" />
+        </span>
+        <div class="phase-detail__quick-info">
+          <span class="phase-detail__quick-label-strong">Partidas</span>
+          <span class="phase-detail__quick-label">Calendário e resultados</span>
+        </div>
+        <lucide-icon
+          class="phase-detail__quick-chevron"
+          [img]="chevronRightIcon"
+          [size]="18"
+          aria-hidden="true"
+        />
+      </a>
+      <a
+        class="phase-detail__quick-link"
+        [routerLink]="[
+          '/tournaments',
+          tournament()?.id,
+          'phases',
+          p.id,
+          'standings'
+        ]"
+      >
+        <span class="phase-detail__quick-icon" aria-hidden="true">
+          <lucide-icon [img]="trophyIcon" [size]="20" />
+        </span>
+        <div class="phase-detail__quick-info">
+          <span class="phase-detail__quick-label-strong">Classificação</span>
+          <span class="phase-detail__quick-label">
+            Tabela e finalização da fase
+          </span>
+        </div>
+        <lucide-icon
+          class="phase-detail__quick-chevron"
+          [img]="chevronRightIcon"
+          [size]="18"
+          aria-hidden="true"
+        />
+      </a>
+    </nav>
+
+    @if (canEdit()) {
+      <article class="phase-detail__actions">
+        <header class="phase-detail__card-header">
+          <h3 class="phase-detail__card-title">Ações do organizador</h3>
+        </header>
+        <a
+          class="phase-detail__edit-link"
+          [routerLink]="[
+            '/tournaments',
+            tournament()?.id,
+            'phases',
+            p.id,
+            'edit'
+          ]"
+        >
+          <lucide-icon [img]="pencilIcon" [size]="16" />
+          Editar configurações
+        </a>
+      </article>
+    }
+  }
+</section>

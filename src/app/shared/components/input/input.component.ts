@@ -24,7 +24,8 @@ export type InputType =
   | 'url'
   | 'number'
   | 'tel'
-  | 'search';
+  | 'search'
+  | 'datetime-local';
 
 let nextInputId = 0;
 
@@ -85,18 +86,22 @@ export class InputComponent implements ControlValueAccessor {
     return null;
   });
 
-  private _onChange: (value: string) => void = () => {
+  private _onChange: (value: unknown) => void = () => {
     /* replaced by registerOnChange */
   };
   private _onTouched: () => void = () => {
     /* replaced by registerOnTouched */
   };
 
-  public writeValue(value: string | null): void {
-    this.value.set(value ?? '');
+  public writeValue(value: unknown): void {
+    if (value === null || value === undefined) {
+      this.value.set('');
+    } else {
+      this.value.set(String(value));
+    }
   }
 
-  public registerOnChange(fn: (value: string) => void): void {
+  public registerOnChange(fn: (value: unknown) => void): void {
     this._onChange = fn;
   }
 
@@ -110,8 +115,19 @@ export class InputComponent implements ControlValueAccessor {
 
   protected handleInput(event: Event): void {
     const target = event.target as HTMLInputElement;
-    this.value.set(target.value);
-    this._onChange(target.value);
+    const raw = target.value;
+    this.value.set(raw);
+
+    if (this.type() === 'number') {
+      if (raw === '') {
+        this._onChange(null);
+      } else {
+        const num = Number(raw);
+        this._onChange(Number.isFinite(num) ? num : raw);
+      }
+    } else {
+      this._onChange(raw);
+    }
   }
 
   protected handleBlur(): void {

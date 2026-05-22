@@ -1,0 +1,142 @@
+.mform {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.mform__banner {
+  background-color: color-mix(in srgb, var(--warning) 14%, transparent);
+  color: var(--amber-700);
+  border: 1px solid color-mix(in srgb, var(--warning) 35%, transparent);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+}
+
+[data-theme='dark'] .mform__banner {
+  color: var(--amber-300);
+}
+
+.mform__alert {
+  background-color: color-mix(in srgb, var(--danger) 12%, transparent);
+  color: var(--danger);
+  border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+}
+
+.mform__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.mform__section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mform__section-title {
+  font-size: var(--text-lg);
+  line-height: var(--lh-lg);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.mform__section-subtitle {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: var(--lh-sm);
+}
+
+.mform__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.mform__label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-secondary);
+}
+
+.mform__select {
+  appearance: none;
+  -webkit-appearance: none;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  padding: var(--space-3) var(--space-9) var(--space-3) var(--space-3);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  outline: none;
+  min-height: 48px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) 50%,
+    calc(100% - 12px) 50%;
+  background-size:
+    6px 6px,
+    6px 6px;
+  background-repeat: no-repeat;
+  transition:
+    border-color var(--duration-fast) var(--easing-default),
+    box-shadow var(--duration-fast) var(--easing-default);
+  cursor: pointer;
+  width: 100%;
+}
+
+.mform__select:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 20%, transparent);
+}
+
+.mform__select:disabled {
+  background-color: var(--bg-muted);
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.mform__field-error {
+  font-size: var(--text-xs);
+  color: var(--danger);
+  font-weight: var(--font-medium);
+  margin: 0;
+}
+
+.mform__grid-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+
+.mform__actions {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+@media (min-width: 640px) {
+  .mform__grid-2 {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+  }
+  .mform__actions {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+  .mform__actions app-button {
+    min-width: 160px;
+  }
+}

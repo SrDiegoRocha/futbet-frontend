@@ -1,0 +1,278 @@
+<form
+  class="pform"
+  [formGroup]="form"
+  (ngSubmit)="onSubmit()"
+  novalidate
+>
+  @if (statusBanner(); as banner) {
+    <div class="pform__banner" role="status">{{ banner }}</div>
+  }
+
+  @if (serverError(); as err) {
+    <div class="pform__alert" role="alert">{{ err }}</div>
+  }
+
+  <section class="pform__section">
+    <header class="pform__section-header">
+      <h2 class="pform__section-title">Informações</h2>
+      <p class="pform__section-subtitle">
+        Identifique esta fase do torneio
+      </p>
+    </header>
+
+    <app-input
+      formControlName="name"
+      type="text"
+      label="Nome"
+      placeholder="Ex.: Fase de grupos · Oitavas de final"
+      autocomplete="off"
+      [errorText]="nameError()"
+      [required]="true"
+    />
+  </section>
+
+  <section class="pform__section">
+    <header class="pform__section-header">
+      <h2 class="pform__section-title">Tipo de fase</h2>
+      <p class="pform__section-subtitle">
+        Como os times vão se enfrentar
+      </p>
+    </header>
+    <div class="pform__options" role="radiogroup" aria-label="Tipo de fase">
+      <button
+        type="button"
+        class="pform__option"
+        [class.pform__option--active]="phaseType() === 'ROUND_ROBIN'"
+        [disabled]="isLocked()"
+        (click)="setPhaseType('ROUND_ROBIN')"
+        role="radio"
+        [attr.aria-checked]="phaseType() === 'ROUND_ROBIN'"
+      >
+        <span class="pform__option-icon" aria-hidden="true">
+          <lucide-icon [img]="repeatIcon" [size]="18" />
+        </span>
+        <span class="pform__option-name">Pontos corridos</span>
+        <span class="pform__option-desc">Todos contra todos</span>
+      </button>
+      <button
+        type="button"
+        class="pform__option"
+        [class.pform__option--active]="phaseType() === 'KNOCKOUT'"
+        [disabled]="isLocked()"
+        (click)="setPhaseType('KNOCKOUT')"
+        role="radio"
+        [attr.aria-checked]="phaseType() === 'KNOCKOUT'"
+      >
+        <span class="pform__option-icon" aria-hidden="true">
+          <lucide-icon [img]="crownIcon" [size]="18" />
+        </span>
+        <span class="pform__option-name">Mata-mata</span>
+        <span class="pform__option-desc">Eliminatórias</span>
+      </button>
+      <button
+        type="button"
+        class="pform__option"
+        [class.pform__option--active]="phaseType() === 'GROUPS'"
+        [disabled]="isLocked()"
+        (click)="setPhaseType('GROUPS')"
+        role="radio"
+        [attr.aria-checked]="phaseType() === 'GROUPS'"
+      >
+        <span class="pform__option-icon" aria-hidden="true">
+          <lucide-icon [img]="gridIcon" [size]="18" />
+        </span>
+        <span class="pform__option-name">Grupos</span>
+        <span class="pform__option-desc">Divididos em chaves</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="pform__section">
+    <header class="pform__section-header">
+      <h2 class="pform__section-title">Confronto</h2>
+      <p class="pform__section-subtitle">
+        Cada par de times joga uma ou duas vezes
+      </p>
+    </header>
+    <div class="pform__options pform__options--two" role="radiogroup" aria-label="Modo de confronto">
+      <button
+        type="button"
+        class="pform__option"
+        [class.pform__option--active]="legMode() === 'SINGLE'"
+        [disabled]="isLocked()"
+        (click)="setLegMode('SINGLE')"
+        role="radio"
+        [attr.aria-checked]="legMode() === 'SINGLE'"
+      >
+        <span class="pform__option-icon" aria-hidden="true">
+          <lucide-icon [img]="arrowRightIcon" [size]="18" />
+        </span>
+        <span class="pform__option-name">Jogo único</span>
+        <span class="pform__option-desc">1 partida por confronto</span>
+      </button>
+      <button
+        type="button"
+        class="pform__option"
+        [class.pform__option--active]="legMode() === 'TWO_LEGGED'"
+        [disabled]="isLocked()"
+        (click)="setLegMode('TWO_LEGGED')"
+        role="radio"
+        [attr.aria-checked]="legMode() === 'TWO_LEGGED'"
+      >
+        <span class="pform__option-icon" aria-hidden="true">
+          <lucide-icon [img]="arrowLeftRightIcon" [size]="18" />
+        </span>
+        <span class="pform__option-name">Ida e volta</span>
+        <span class="pform__option-desc">2 partidas (mando trocado)</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="pform__section">
+    <header class="pform__section-header">
+      <h2 class="pform__section-title">Geração de partidas</h2>
+      <p class="pform__section-subtitle">
+        Quem decide o calendário dos jogos
+      </p>
+    </header>
+    <div class="pform__options pform__options--two" role="radiogroup" aria-label="Modo de geração">
+      <button
+        type="button"
+        class="pform__option"
+        [class.pform__option--active]="genMode() === 'AUTOMATIC'"
+        [disabled]="isLocked()"
+        (click)="setGenMode('AUTOMATIC')"
+        role="radio"
+        [attr.aria-checked]="genMode() === 'AUTOMATIC'"
+      >
+        <span class="pform__option-icon" aria-hidden="true">
+          <lucide-icon [img]="sparklesIcon" [size]="18" />
+        </span>
+        <span class="pform__option-name">Automática</span>
+        <span class="pform__option-desc">Sistema gera o chaveamento</span>
+      </button>
+      <button
+        type="button"
+        class="pform__option"
+        [class.pform__option--active]="genMode() === 'MANUAL'"
+        [disabled]="isLocked()"
+        (click)="setGenMode('MANUAL')"
+        role="radio"
+        [attr.aria-checked]="genMode() === 'MANUAL'"
+      >
+        <span class="pform__option-icon" aria-hidden="true">
+          <lucide-icon [img]="penLineIcon" [size]="18" />
+        </span>
+        <span class="pform__option-name">Manual</span>
+        <span class="pform__option-desc">Você cria cada partida</span>
+      </button>
+    </div>
+  </section>
+
+  @if (isGroups()) {
+    <section class="pform__section">
+      <header class="pform__section-header">
+        <h2 class="pform__section-title">Configurações dos grupos</h2>
+      </header>
+
+      <app-input
+        formControlName="qualifiersPerGroup"
+        type="number"
+        label="Times que se classificam por grupo (opcional)"
+        placeholder="Ex.: 2"
+        inputmode="numeric"
+        [errorText]="qualifiersError()"
+        helper="Usado nas zonas pra decidir quem avança."
+      />
+
+      <button
+        type="button"
+        class="pform__toggle"
+        [class.pform__toggle--on]="playsInsideGroupOnly()"
+        [disabled]="isLocked()"
+        (click)="togglePlaysInsideGroupOnly()"
+        role="switch"
+        [attr.aria-checked]="playsInsideGroupOnly()"
+      >
+        <span class="pform__toggle-track">
+          <span class="pform__toggle-thumb"></span>
+        </span>
+        <span class="pform__toggle-text">
+          <span class="pform__toggle-name">Jogos só dentro do grupo</span>
+          <span class="pform__toggle-desc">
+            Se desligado, times podem se enfrentar entre grupos
+          </span>
+        </span>
+      </button>
+    </section>
+  }
+
+  @if (isKnockout()) {
+    <section class="pform__section">
+      <header class="pform__section-header">
+        <h2 class="pform__section-title">Configurações do mata-mata</h2>
+      </header>
+
+      <button
+        type="button"
+        class="pform__toggle"
+        [class.pform__toggle--on]="hasThirdPlace()"
+        [disabled]="isLocked()"
+        (click)="toggleHasThirdPlace()"
+        role="switch"
+        [attr.aria-checked]="hasThirdPlace()"
+      >
+        <span class="pform__toggle-track">
+          <span class="pform__toggle-thumb"></span>
+        </span>
+        <span class="pform__toggle-text">
+          <span class="pform__toggle-name">Disputa de 3º lugar</span>
+          <span class="pform__toggle-desc">
+            Perdedores das semifinais se enfrentam
+          </span>
+        </span>
+      </button>
+    </section>
+  }
+
+  <div class="pform__actions">
+    <app-button
+      type="button"
+      variant="ghost"
+      size="lg"
+      [disabled]="submitting() || deleting()"
+      (buttonClick)="onCancel()"
+    >
+      Cancelar
+    </app-button>
+    <app-button
+      type="submit"
+      variant="primary"
+      size="lg"
+      [loading]="submitting()"
+      [disabled]="deleting() || isLocked()"
+    >
+      {{ submitLabel() }}
+    </app-button>
+  </div>
+
+  @if (mode() === 'edit' && !isLocked()) {
+    <div class="pform__danger">
+      <p class="pform__danger-title">Zona de perigo</p>
+      <p class="pform__danger-text">
+        Excluir esta fase é permanente. Não é possível excluir se há matches
+        já criados nesta fase.
+      </p>
+      <app-button
+        type="button"
+        variant="destructive"
+        size="md"
+        [loading]="deleting()"
+        [disabled]="submitting()"
+        (buttonClick)="onDelete()"
+      >
+        Excluir fase
+      </app-button>
+    </div>
+  }
+</form>

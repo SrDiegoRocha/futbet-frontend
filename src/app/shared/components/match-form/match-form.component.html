@@ -1,0 +1,142 @@
+<form class="mform" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+  @if (statusBanner(); as banner) {
+    <div class="mform__banner" role="status">{{ banner }}</div>
+  }
+
+  @if (serverError(); as err) {
+    <div class="mform__alert" role="alert">{{ err }}</div>
+  }
+
+  <section class="mform__section">
+    <header class="mform__section-header">
+      <h2 class="mform__section-title">Times</h2>
+      <p class="mform__section-subtitle">
+        Quem joga em casa e quem visita
+      </p>
+    </header>
+
+    <div class="mform__field">
+      <label class="mform__label" for="match-home">Mandante</label>
+      <select
+        id="match-home"
+        class="mform__select"
+        formControlName="homeTeamId"
+      >
+        <option value="" disabled>Selecione um time</option>
+        @for (team of homeOptions(); track team.teamId) {
+          <option [value]="team.teamId">
+            {{ team.teamName
+            }}@if (team.shortName) {
+              {{ ' (' + team.shortName + ')' }}
+            }
+          </option>
+        }
+      </select>
+    </div>
+
+    <div class="mform__field">
+      <label class="mform__label" for="match-away">Visitante</label>
+      <select
+        id="match-away"
+        class="mform__select"
+        formControlName="awayTeamId"
+      >
+        <option value="" disabled>Selecione um time</option>
+        @for (team of awayOptions(); track team.teamId) {
+          <option [value]="team.teamId">
+            {{ team.teamName
+            }}@if (team.shortName) {
+              {{ ' (' + team.shortName + ')' }}
+            }
+          </option>
+        }
+      </select>
+    </div>
+
+    @if (teamsError(); as err) {
+      <p class="mform__field-error" role="alert">{{ err }}</p>
+    }
+  </section>
+
+  <section class="mform__section">
+    <header class="mform__section-header">
+      <h2 class="mform__section-title">Rodada e grupo</h2>
+      <p class="mform__section-subtitle">
+        @if (isGroupsPhase()) {
+          Em qual rodada e grupo este confronto acontece
+        } @else {
+          Em qual rodada este confronto acontece
+        }
+      </p>
+    </header>
+
+    <div class="mform__grid-2">
+      <app-input
+        formControlName="round"
+        type="number"
+        label="Rodada"
+        placeholder="1"
+        inputmode="numeric"
+        [errorText]="roundError()"
+        [required]="true"
+        helper="Use 1 para primeira rodada, 2 para segunda, etc."
+      />
+
+      @if (isGroupsPhase()) {
+        <div class="mform__field">
+          <label class="mform__label" for="match-group">Grupo</label>
+          <select
+            id="match-group"
+            class="mform__select"
+            formControlName="groupId"
+          >
+            <option [ngValue]="null" disabled>Selecione um grupo</option>
+            @for (group of groups(); track group.id) {
+              <option [ngValue]="group.id">{{ group.name }}</option>
+            }
+          </select>
+          @if (groupRequiredError(); as err) {
+            <p class="mform__field-error" role="alert">{{ err }}</p>
+          }
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="mform__section">
+    <header class="mform__section-header">
+      <h2 class="mform__section-title">Agendamento</h2>
+      <p class="mform__section-subtitle">
+        Data e hora da partida (opcional). Também é a deadline para palpites.
+      </p>
+    </header>
+
+    <app-input
+      formControlName="scheduledAt"
+      type="datetime-local"
+      label="Data e hora"
+      helper="Deixe em branco se ainda não tem agenda definida."
+    />
+  </section>
+
+  <div class="mform__actions">
+    <app-button
+      type="button"
+      variant="ghost"
+      size="lg"
+      [disabled]="submitting()"
+      (buttonClick)="onCancel()"
+    >
+      Cancelar
+    </app-button>
+    <app-button
+      type="submit"
+      variant="primary"
+      size="lg"
+      [loading]="submitting()"
+      [disabled]="isLocked()"
+    >
+      {{ submitLabel() }}
+    </app-button>
+  </div>
+</form>

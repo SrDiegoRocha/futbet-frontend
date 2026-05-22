@@ -6,18 +6,27 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthState } from '@core/auth/auth-state';
 import { AuthService } from '@core/services/auth.service';
 import { AvatarComponent } from '@shared/components/avatar/avatar.component';
 import { LogoComponent } from '@shared/components/logo/logo.component';
 import { ThemeMode, ThemeService } from '@shared/services/theme.service';
-import { LogOut, LucideAngularModule, Monitor, Moon, Sun } from 'lucide-angular';
+import {
+  Bell,
+  LogOut,
+  LucideAngularModule,
+  Monitor,
+  Moon,
+  Settings,
+  Sun,
+  Ticket,
+} from 'lucide-angular';
 
 @Component({
   selector: 'app-app-bar',
   standalone: true,
-  imports: [LogoComponent, AvatarComponent, LucideAngularModule],
+  imports: [LogoComponent, AvatarComponent, LucideAngularModule, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './app-bar.component.html',
   styleUrl: './app-bar.component.scss',
@@ -36,6 +45,9 @@ export class AppBarComponent {
   protected readonly moonIcon = Moon;
   protected readonly monitorIcon = Monitor;
   protected readonly logOutIcon = LogOut;
+  protected readonly ticketIcon = Ticket;
+  protected readonly settingsIcon = Settings;
+  protected readonly bellIcon = Bell;
 
   protected readonly userName = computed(() => this.user()?.name ?? '');
   protected readonly userEmail = computed(() => this.user()?.email ?? '');

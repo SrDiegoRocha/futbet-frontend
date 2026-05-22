@@ -1,0 +1,215 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.tiebreak {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.tiebreak__selected {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 60px;
+  padding: var(--space-3);
+  background-color: var(--bg-muted);
+  border: 1px dashed var(--border-default);
+  border-radius: var(--radius-md);
+}
+
+.tiebreak__chip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-primary);
+  user-select: none;
+  cursor: default;
+  transition: box-shadow var(--duration-fast) var(--easing-default);
+}
+
+.tiebreak__chip:hover {
+  box-shadow: var(--shadow-xs);
+}
+
+.tiebreak__order {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  background-color: var(--brand-subtle);
+  color: var(--brand-press);
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  border-radius: var(--radius-full);
+  padding-inline: var(--space-1);
+}
+
+[data-theme='dark'] .tiebreak__order {
+  background-color: var(--brand);
+  color: var(--text-on-brand);
+}
+
+.tiebreak__grip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: grab;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--duration-fast) var(--easing-default);
+}
+
+.tiebreak__grip:hover {
+  background-color: var(--bg-muted);
+  color: var(--text-secondary);
+}
+
+.tiebreak__grip:active {
+  cursor: grabbing;
+}
+
+.tiebreak__grip:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.tiebreak__label {
+  flex: 1;
+  min-width: 0;
+}
+
+.tiebreak__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-full);
+  transition:
+    background-color var(--duration-fast) var(--easing-default),
+    color var(--duration-fast) var(--easing-default);
+}
+
+.tiebreak__remove:hover {
+  background-color: color-mix(in srgb, var(--danger) 12%, transparent);
+  color: var(--danger);
+}
+
+.tiebreak__remove:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.tiebreak__empty {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  text-align: center;
+  padding: var(--space-3);
+}
+
+.tiebreak__available-label {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: var(--font-medium);
+  color: var(--text-muted);
+  margin: 0 0 var(--space-2);
+}
+
+.tiebreak__available-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.tiebreak__add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  background-color: transparent;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--easing-default),
+    color var(--duration-fast) var(--easing-default),
+    border-color var(--duration-fast) var(--easing-default);
+}
+
+.tiebreak__add-btn:hover:not(:disabled) {
+  background-color: var(--brand-subtle);
+  color: var(--brand-press);
+  border-color: var(--brand);
+  border-style: solid;
+}
+
+[data-theme='dark'] .tiebreak__add-btn:hover:not(:disabled) {
+  color: var(--brand);
+}
+
+.tiebreak__add-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.tiebreak--disabled {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.tiebreak__chip-preview {
+  display: none;
+}
+
+/* Angular CDK drag-drop hooks */
+:host ::ng-deep .cdk-drag-preview {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--brand);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-primary);
+  cursor: grabbing;
+  font-family: var(--font-sans);
+}
+
+:host ::ng-deep .cdk-drag-placeholder {
+  opacity: 0.25;
+}
+
+:host ::ng-deep .cdk-drag-animating {
+  transition: transform 220ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.tiebreak__selected.cdk-drop-list-dragging
+  .tiebreak__chip:not(.cdk-drag-placeholder) {
+  transition: transform 220ms cubic-bezier(0, 0, 0.2, 1);
+}

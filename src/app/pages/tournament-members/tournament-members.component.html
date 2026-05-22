@@ -1,0 +1,158 @@
+<section class="page">
+  <app-page-header
+    title="Membros"
+    [subtitle]="tournament()?.name ?? ''"
+    [backTo]="backToHref()"
+  />
+
+  @if (loading()) {
+    <div class="page__skeleton">
+      <div class="u-skeleton page__skeleton-filter"></div>
+      @for (i of [1, 2, 3, 4]; track i) {
+        <div class="u-skeleton page__skeleton-row"></div>
+      }
+    </div>
+  } @else if (loadError(); as err) {
+    <div class="page__error" role="alert">
+      <p class="page__error-text">{{ err }}</p>
+    </div>
+  } @else {
+    <div class="page__filters" role="tablist" aria-label="Filtrar por status">
+      <button
+        type="button"
+        role="tab"
+        class="page__filter"
+        [class.page__filter--active]="filter() === 'ALL'"
+        [attr.aria-selected]="filter() === 'ALL'"
+        (click)="setFilter('ALL')"
+      >
+        Todos
+        <span class="page__filter-count">{{ counts().ALL }}</span>
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class="page__filter"
+        [class.page__filter--active]="filter() === 'ACTIVE'"
+        [attr.aria-selected]="filter() === 'ACTIVE'"
+        (click)="setFilter('ACTIVE')"
+      >
+        Ativos
+        <span class="page__filter-count">{{ counts().ACTIVE }}</span>
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class="page__filter"
+        [class.page__filter--active]="filter() === 'LEFT'"
+        [attr.aria-selected]="filter() === 'LEFT'"
+        (click)="setFilter('LEFT')"
+      >
+        Saíram
+        <span class="page__filter-count">{{ counts().LEFT }}</span>
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class="page__filter"
+        [class.page__filter--active]="filter() === 'BANNED'"
+        [attr.aria-selected]="filter() === 'BANNED'"
+        (click)="setFilter('BANNED')"
+      >
+        Banidos
+        <span class="page__filter-count">{{ counts().BANNED }}</span>
+      </button>
+    </div>
+
+    @if (filteredMembers().length === 0) {
+      <app-empty-state
+        [icon]="usersIcon"
+        title="Nenhum membro nesta categoria"
+        description="Mude o filtro pra ver membros em outros status."
+      />
+    } @else {
+      <ul class="members" [@listStagger]="filteredMembers().length">
+        @for (m of filteredMembers(); track m.userId) {
+          <li
+            class="member"
+            [class.member--inactive]="m.status !== 'ACTIVE'"
+          >
+            <app-avatar
+              [name]="m.name"
+              [imageUrl]="m.avatarUrl"
+              [size]="44"
+            />
+
+            <div class="member__info">
+              <div class="member__title-row">
+                <span class="member__name">{{ m.name }}</span>
+                @if (m.role === 'OWNER') {
+                  <span
+                    class="member__role"
+                    aria-label="Organizador do torneio"
+                  >
+                    <lucide-icon [img]="crownIcon" [size]="12" />
+                    <span>Owner</span>
+                  </span>
+                }
+              </div>
+              <span
+                class="member__status"
+                [class.member__status--active]="m.status === 'ACTIVE'"
+                [class.member__status--left]="m.status === 'LEFT'"
+                [class.member__status--banned]="m.status === 'BANNED'"
+              >
+                {{ statusLabel(m.status) }}
+              </span>
+            </div>
+
+            <div class="member__actions">
+              @if (canBan(m)) {
+                <button
+                  type="button"
+                  class="member__btn member__btn--danger"
+                  (click)="requestBan(m)"
+                  [attr.aria-label]="'Banir ' + m.name"
+                >
+                  Banir
+                </button>
+              }
+              @if (canLeave(m)) {
+                <button
+                  type="button"
+                  class="member__btn member__btn--danger"
+                  (click)="requestLeave()"
+                  aria-label="Sair do torneio"
+                >
+                  Sair
+                </button>
+              }
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  }
+
+  <app-confirm-dialog
+    [open]="confirmBan() !== null"
+    title="Banir membro?"
+    [description]="banDescription()"
+    confirmLabel="Banir"
+    variant="destructive"
+    [loading]="actionInProgress()"
+    (confirmed)="confirmBanAction()"
+    (cancelled)="cancelBan()"
+  />
+
+  <app-confirm-dialog
+    [open]="confirmLeave()"
+    title="Sair do torneio?"
+    description="Você pode voltar usando o código de convite, se ainda for válido."
+    confirmLabel="Sair"
+    variant="destructive"
+    [loading]="actionInProgress()"
+    (confirmed)="confirmLeaveAction()"
+    (cancelled)="cancelLeave()"
+  />
+</section>

@@ -1,0 +1,286 @@
+<section class="page">
+  <app-page-header
+    title="Grupos"
+    [subtitle]="phase()?.name ?? ''"
+    [backTo]="backToHref()"
+  />
+
+  @if (loading()) {
+    <div class="page__skeleton">
+      <div class="u-skeleton page__skeleton-row"></div>
+      <div class="u-skeleton page__skeleton-row"></div>
+      <div class="u-skeleton page__skeleton-row"></div>
+    </div>
+  } @else if (loadError(); as err) {
+    <div class="page__error" role="alert">
+      <p class="page__error-text">{{ err }}</p>
+    </div>
+  } @else if (!isGroupsPhase()) {
+    <app-empty-state
+      [icon]="gridIcon"
+      title="Esta fase não usa grupos"
+      description="Grupos só estão disponíveis em fases do tipo Grupos. Altere o tipo da fase para começar."
+    >
+      @if (canEdit()) {
+        <a class="page__empty-cta" [routerLink]="editPhaseHref()">
+          Editar tipo da fase
+        </a>
+      }
+    </app-empty-state>
+  } @else {
+    @if (statusBanner(); as banner) {
+      <div class="page__banner" role="status">{{ banner }}</div>
+    }
+
+    @if (canEdit() && groups().length > 0) {
+      <div class="page__actions">
+        <app-button
+          variant="brand-outline"
+          size="md"
+          [loading]="drawing()"
+          [disabled]="!canDraw()"
+          (buttonClick)="requestDraw()"
+        >
+          <lucide-icon [img]="shuffleIcon" [size]="16" />
+          Sortear distribuição
+        </app-button>
+      </div>
+    }
+
+    @if (groups().length === 0 && phaseTeams().length === 0) {
+      <app-empty-state
+        [icon]="gridIcon"
+        title="Sem grupos ainda"
+        description="Adicione times à fase e crie grupos para organizá-los."
+      >
+        @if (canEdit()) {
+          <button
+            type="button"
+            class="page__empty-cta"
+            (click)="openCreateGroup()"
+          >
+            Criar primeiro grupo
+          </button>
+        }
+      </app-empty-state>
+    } @else {
+      <div class="board" cdkDropListGroup>
+        @if (teamsWithoutGroup().length > 0 || groups().length > 0) {
+          <article
+            class="group group--unassigned"
+            [class.group--locked]="!canEdit()"
+          >
+            <header class="group__header">
+              <h3 class="group__name">Sem grupo</h3>
+              <span class="group__count">
+                {{ teamsWithoutGroup().length }}
+                {{ teamsWithoutGroup().length === 1 ? 'time' : 'times' }}
+              </span>
+            </header>
+
+            <ul
+              class="group__teams"
+              cdkDropList
+              [cdkDropListData]="teamsWithoutGroup()"
+              [cdkDropListDisabled]="!canEdit()"
+              (cdkDropListDropped)="onDrop($event, null, null)"
+            >
+              @for (team of teamsWithoutGroup(); track team.teamId) {
+                <li
+                  class="team-chip"
+                  cdkDrag
+                  [cdkDragData]="team"
+                  [cdkDragDisabled]="!canEdit() || movingTeamId() !== null"
+                  [cdkDragStartDelay]="{ touch: 180, mouse: 0 }"
+                  [class.team-chip--moving]="movingTeamId() === team.teamId"
+                >
+                  <app-team-badge
+                    [name]="team.teamName"
+                    [shortName]="team.shortName"
+                    [badgeUrl]="team.badgeUrl"
+                    [primaryColor]="team.primaryColor"
+                    [secondaryColor]="team.secondaryColor"
+                    [size]="32"
+                  />
+                  <span class="team-chip__name">{{ team.teamName }}</span>
+                </li>
+              } @empty {
+                <li class="group__empty-hint" aria-hidden="true">
+                  Arraste times aqui para tirá-los do grupo
+                </li>
+              }
+            </ul>
+          </article>
+        }
+
+        @for (group of groups(); track group.id) {
+          <article
+            class="group"
+            [class.group--locked]="!canEdit()"
+          >
+            <header class="group__header">
+              <h3 class="group__name">{{ group.name }}</h3>
+              <span class="group__count">
+                {{ teamsInGroup(group.id).length }}
+                {{
+                  teamsInGroup(group.id).length === 1 ? 'time' : 'times'
+                }}
+              </span>
+              @if (canEdit()) {
+                <div class="group__actions">
+                  <button
+                    type="button"
+                    class="group__icon-btn"
+                    (click)="openEditGroup(group)"
+                    [attr.aria-label]="'Editar ' + group.name"
+                  >
+                    <lucide-icon [img]="pencilIcon" [size]="14" />
+                  </button>
+                  <button
+                    type="button"
+                    class="group__icon-btn group__icon-btn--danger"
+                    (click)="requestDeleteGroup(group)"
+                    [attr.aria-label]="'Excluir ' + group.name"
+                  >
+                    <lucide-icon [img]="trashIcon" [size]="14" />
+                  </button>
+                </div>
+              }
+            </header>
+
+            <ul
+              class="group__teams"
+              cdkDropList
+              [cdkDropListData]="teamsInGroup(group.id)"
+              [cdkDropListDisabled]="!canEdit()"
+              (cdkDropListDropped)="onDrop($event, group.id, group.name)"
+            >
+              @for (team of teamsInGroup(group.id); track team.teamId) {
+                <li
+                  class="team-chip"
+                  cdkDrag
+                  [cdkDragData]="team"
+                  [cdkDragDisabled]="!canEdit() || movingTeamId() !== null"
+                  [cdkDragStartDelay]="{ touch: 180, mouse: 0 }"
+                  [class.team-chip--moving]="movingTeamId() === team.teamId"
+                >
+                  <app-team-badge
+                    [name]="team.teamName"
+                    [shortName]="team.shortName"
+                    [badgeUrl]="team.badgeUrl"
+                    [primaryColor]="team.primaryColor"
+                    [secondaryColor]="team.secondaryColor"
+                    [size]="32"
+                  />
+                  <span class="team-chip__name">{{ team.teamName }}</span>
+                </li>
+              } @empty {
+                <li class="group__empty-hint" aria-hidden="true">
+                  Arraste times aqui
+                </li>
+              }
+            </ul>
+          </article>
+        }
+      </div>
+    }
+  }
+</section>
+
+@if (canEdit() && isGroupsPhase() && !loading()) {
+  <app-fab
+    ariaLabel="Criar novo grupo"
+    label="Novo grupo"
+    [icon]="plusIcon"
+    (buttonClick)="openCreateGroup()"
+  />
+}
+
+@if (groupModalOpen()) {
+  <div class="modal" role="dialog" aria-modal="true">
+    <div
+      class="modal__backdrop"
+      (click)="closeGroupModal()"
+      aria-hidden="true"
+      @backdropFade
+    ></div>
+    <div class="modal__content" @modalScale>
+      <header class="modal__header">
+        <h2 class="modal__title">{{ modalTitle() }}</h2>
+        <button
+          type="button"
+          class="modal__close"
+          (click)="closeGroupModal()"
+          [disabled]="savingGroup()"
+          aria-label="Fechar"
+        >
+          <lucide-icon [img]="xIcon" [size]="18" />
+        </button>
+      </header>
+
+      <form class="modal__form" (ngSubmit)="submitGroupForm()" novalidate>
+        <label class="modal__label" for="group-name-field">Nome do grupo</label>
+        <input
+          #groupNameField
+          id="group-name-field"
+          type="text"
+          class="modal__input"
+          [class.modal__input--error]="groupNameError() !== null"
+          [value]="groupNameInput()"
+          (input)="onGroupNameInput($event)"
+          maxlength="40"
+          placeholder="Ex.: Grupo A"
+          autocomplete="off"
+          spellcheck="false"
+          [disabled]="savingGroup()"
+        />
+        @if (groupNameError(); as err) {
+          <p class="modal__error" role="alert">{{ err }}</p>
+        } @else {
+          <p class="modal__helper">Até 40 caracteres.</p>
+        }
+
+        <div class="modal__actions">
+          <app-button
+            type="button"
+            variant="ghost"
+            size="md"
+            [disabled]="savingGroup()"
+            (buttonClick)="closeGroupModal()"
+          >
+            Cancelar
+          </app-button>
+          <app-button
+            type="submit"
+            variant="primary"
+            size="md"
+            [loading]="savingGroup()"
+          >
+            {{ modalSubmitLabel() }}
+          </app-button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<app-confirm-dialog
+  [open]="confirmDeleteGroup() !== null"
+  title="Excluir grupo?"
+  [description]="deleteGroupDescription()"
+  confirmLabel="Excluir grupo"
+  variant="destructive"
+  [loading]="deletingGroup()"
+  (confirmed)="confirmDeleteGroupAction()"
+  (cancelled)="cancelDeleteGroup()"
+/>
+
+<app-confirm-dialog
+  [open]="confirmDrawOpen()"
+  title="Sortear distribuição?"
+  description="Os times sem grupo serão distribuídos aleatoriamente entre os grupos existentes. Times já em grupos não são movidos."
+  confirmLabel="Sortear"
+  [loading]="drawing()"
+  (confirmed)="confirmDrawAction()"
+  (cancelled)="cancelDraw()"
+/>

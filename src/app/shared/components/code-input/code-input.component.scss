@@ -1,0 +1,72 @@
+:host {
+  display: block;
+}
+
+.code-input {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.code-input__cell {
+  width: 44px;
+  height: 56px;
+  flex-shrink: 0;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  text-transform: uppercase;
+  padding: 0;
+  outline: none;
+  transition:
+    border-color var(--duration-fast) var(--easing-default),
+    box-shadow var(--duration-fast) var(--easing-default),
+    background-color var(--duration-fast) var(--easing-default);
+  caret-color: var(--brand);
+}
+
+.code-input__cell:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 25%, transparent);
+  background-color: var(--bg-elevated);
+}
+
+.code-input--error .code-input__cell {
+  border-color: var(--danger);
+  background-color: color-mix(in srgb, var(--danger) 6%, var(--bg-surface));
+}
+
+.code-input--error .code-input__cell:focus {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 25%, transparent);
+}
+
+.code-input--disabled .code-input__cell {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 380px) {
+  .code-input {
+    gap: 6px;
+  }
+  .code-input__cell {
+    width: 36px;
+    height: 48px;
+    font-size: var(--text-xl);
+  }
+}
+
+@media (min-width: 640px) {
+  .code-input__cell {
+    width: 52px;
+    height: 64px;
+    font-size: var(--text-3xl);
+  }
+}

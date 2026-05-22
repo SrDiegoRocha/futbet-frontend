@@ -1,0 +1,48 @@
+<section class="page">
+  <app-page-header
+    title="Editar zona"
+    [subtitle]="zone()?.name ?? ''"
+    [backTo]="backToHref()"
+  />
+
+  @if (loading()) {
+    <div class="page__skeleton">
+      <div class="u-skeleton page__skeleton-line"></div>
+      <div class="u-skeleton page__skeleton-line"></div>
+      <div class="u-skeleton page__skeleton-line"></div>
+    </div>
+  } @else if (loadError(); as err) {
+    <div class="page__error" role="alert">
+      <p class="page__error-text">{{ err }}</p>
+      <app-button variant="brand-outline" size="md" (buttonClick)="cancel()">
+        Voltar
+      </app-button>
+    </div>
+  } @else if (zone(); as z) {
+    <app-zone-form
+      [initial]="z"
+      mode="edit"
+      [phaseType]="phaseType()"
+      [groupCount]="groupCount()"
+      [futurePhases]="futurePhases()"
+      [tournamentStatus]="tournamentStatus()"
+      [submitting]="submitting()"
+      [deleting]="deleting()"
+      [serverError]="serverError()"
+      (saveForm)="save($event)"
+      (deleteZone)="requestDelete()"
+      (cancelForm)="cancel()"
+    />
+  }
+
+  <app-confirm-dialog
+    [open]="confirmDeleteOpen()"
+    title="Excluir zona?"
+    description="A zona será excluída permanentemente."
+    confirmLabel="Excluir zona"
+    variant="destructive"
+    [loading]="deleting()"
+    (confirmed)="confirmDelete()"
+    (cancelled)="cancelDelete()"
+  />
+</section>

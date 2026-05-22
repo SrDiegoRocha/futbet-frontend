@@ -11,12 +11,15 @@ import { AvatarComponent } from '@shared/components/avatar/avatar.component';
 import { LogoComponent } from '@shared/components/logo/logo.component';
 import { ThemeService } from '@shared/services/theme.service';
 import {
+  Bell,
   Globe,
   LogOut,
   LucideAngularModule,
   Moon,
+  Settings,
   Shield,
   Sun,
+  Ticket,
   Trophy,
 } from 'lucide-angular';
 
@@ -53,6 +56,9 @@ export class SidebarComponent {
   protected readonly logOutIcon = LogOut;
   protected readonly sunIcon = Sun;
   protected readonly moonIcon = Moon;
+  protected readonly ticketIcon = Ticket;
+  protected readonly settingsIcon = Settings;
+  protected readonly bellIcon = Bell;
 
   protected toggleTheme(): void {
     this._themeService.toggle();

@@ -1,0 +1,45 @@
+<section class="page">
+  <app-page-header
+    title="Editar fase"
+    [subtitle]="phase()?.name ?? ''"
+    [backTo]="backToHref()"
+  />
+
+  @if (loading()) {
+    <div class="page__skeleton">
+      <div class="u-skeleton page__skeleton-line"></div>
+      <div class="u-skeleton page__skeleton-line"></div>
+      <div class="u-skeleton page__skeleton-line"></div>
+    </div>
+  } @else if (loadError(); as err) {
+    <div class="page__error" role="alert">
+      <p class="page__error-text">{{ err }}</p>
+      <app-button variant="brand-outline" size="md" (buttonClick)="cancel()">
+        Voltar
+      </app-button>
+    </div>
+  } @else if (phase(); as p) {
+    <app-phase-form
+      [initial]="p"
+      mode="edit"
+      [tournamentStatus]="tournamentStatus()"
+      [submitting]="submitting()"
+      [deleting]="deleting()"
+      [serverError]="serverError()"
+      (saveForm)="save($event)"
+      (deletePhase)="requestDelete()"
+      (cancelForm)="cancel()"
+    />
+  }
+
+  <app-confirm-dialog
+    [open]="confirmDeleteOpen()"
+    title="Excluir fase?"
+    description="Esta ação é permanente. Se a fase tiver matches já criados, a exclusão será bloqueada pelo servidor."
+    confirmLabel="Excluir fase"
+    variant="destructive"
+    [loading]="deleting()"
+    (confirmed)="confirmDelete()"
+    (cancelled)="cancelDelete()"
+  />
+</section>

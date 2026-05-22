@@ -1,0 +1,355 @@
+<section class="page">
+  <app-page-header
+    title="Partida"
+    [subtitle]="roundLabel()"
+    [backTo]="backToHref()"
+  />
+
+  @if (loading()) {
+    <div class="page__skeleton">
+      <div class="u-skeleton page__skeleton-hero"></div>
+      <div class="u-skeleton page__skeleton-line"></div>
+    </div>
+  } @else if (loadError(); as err) {
+    <div class="page__error" role="alert">
+      <p class="page__error-text">{{ err }}</p>
+    </div>
+  } @else if (match(); as m) {
+    <article class="match-hero" [class.match-hero--cancelled]="m.status === 'CANCELLED'">
+      <header class="match-hero__top">
+        <span class="match-hero__round">{{ roundLabel() }}</span>
+        @if (m.groupName) {
+          <span class="match-hero__group">Grupo {{ m.groupName }}</span>
+        }
+        @if (isTwoLegged()) {
+          <span class="match-hero__leg">
+            <lucide-icon [img]="arrowLeftRightIcon" [size]="12" />
+            Ida e volta
+          </span>
+        }
+      </header>
+
+      <div class="match-hero__teams">
+        <div class="match-hero__side">
+          <app-team-badge
+            [name]="m.homeTeam.name"
+            [shortName]="m.homeTeam.shortName"
+            [badgeUrl]="m.homeTeam.badgeUrl"
+            [size]="64"
+          />
+          <span class="match-hero__team-name">{{ m.homeTeam.name }}</span>
+          @if (m.homeTeam.shortName) {
+            <span class="match-hero__team-short">
+              {{ m.homeTeam.shortName }}
+            </span>
+          }
+        </div>
+
+        <div
+          class="match-hero__score"
+          [class.match-hero__score--cancelled]="m.status === 'CANCELLED'"
+        >
+          @if (hasScore()) {
+            <span class="match-hero__score-value">{{ m.homeScore }}</span>
+            <span class="match-hero__score-sep">×</span>
+            <span class="match-hero__score-value">{{ m.awayScore }}</span>
+          } @else {
+            <span class="match-hero__score-placeholder">vs</span>
+          }
+        </div>
+
+        <div class="match-hero__side">
+          <app-team-badge
+            [name]="m.awayTeam.name"
+            [shortName]="m.awayTeam.shortName"
+            [badgeUrl]="m.awayTeam.badgeUrl"
+            [size]="64"
+          />
+          <span class="match-hero__team-name">{{ m.awayTeam.name }}</span>
+          @if (m.awayTeam.shortName) {
+            <span class="match-hero__team-short">
+              {{ m.awayTeam.shortName }}
+            </span>
+          }
+        </div>
+      </div>
+
+      <footer class="match-hero__footer">
+        <span class="match-hero__time">
+          <lucide-icon [img]="calendarIcon" [size]="14" />
+          {{ scheduledLabel() }}
+        </span>
+        <span [class]="statusClass()">{{ statusLabel() }}</span>
+      </footer>
+
+      @if (cancelledNote(); as note) {
+        <p class="match-hero__cancelled-note">{{ note }}</p>
+      }
+    </article>
+
+    @if (isOwner() && tournament()?.status !== 'FINISHED') {
+      <article class="match-actions">
+        <header class="match-info__header">
+          <h3 class="match-info__title">Ações do organizador</h3>
+        </header>
+
+        @if (canEdit() && editMatchHref(); as href) {
+          <a class="match-actions__link" [routerLink]="href">
+            <lucide-icon [img]="pencilIcon" [size]="16" />
+            Editar agendamento
+          </a>
+        }
+
+        @if (m.status !== 'CANCELLED') {
+          <button
+            type="button"
+            class="match-actions__link match-actions__link--filled"
+            [disabled]="!canSetResult()"
+            (click)="openResultDialog()"
+          >
+            <lucide-icon [img]="trophyIcon" [size]="16" />
+            {{ resultActionLabel() }}
+          </button>
+          @if (setResultBlockReason(); as reason) {
+            <p class="match-actions__hint">{{ reason }}</p>
+          }
+        }
+
+        @if (canCancel()) {
+          <button
+            type="button"
+            class="match-actions__link match-actions__link--warning"
+            (click)="openCancelDialog()"
+          >
+            <lucide-icon [img]="banIcon" [size]="16" />
+            Cancelar partida
+          </button>
+        }
+
+        @if (canDelete()) {
+          <button
+            type="button"
+            class="match-actions__link match-actions__link--danger"
+            (click)="openDeleteDialog()"
+          >
+            <lucide-icon [img]="trashIcon" [size]="16" />
+            Excluir partida
+          </button>
+        }
+      </article>
+    }
+
+    @if (isActiveMember()) {
+      <article class="prediction-card">
+        <header class="prediction-card__header">
+          <h3 class="prediction-card__title">Meu palpite</h3>
+          @if (myPrediction(); as p) {
+            @if (m.status === 'COMPLETED') {
+              <span
+                class="prediction-card__points"
+                [class.prediction-card__points--zero]="p.points === 0"
+              >
+                +{{ p.points }} pts
+              </span>
+            } @else {
+              <span class="prediction-card__pending">Aguardando resultado</span>
+            }
+          }
+        </header>
+
+        @if (myPrediction(); as p) {
+          <div class="prediction-card__score">
+            <span class="prediction-card__team">{{ m.homeTeam.shortName ?? m.homeTeam.name }}</span>
+            <span class="prediction-card__value">{{ p.homeScore }}</span>
+            <span class="prediction-card__sep">×</span>
+            <span class="prediction-card__value">{{ p.awayScore }}</span>
+            <span class="prediction-card__team">{{ m.awayTeam.shortName ?? m.awayTeam.name }}</span>
+          </div>
+        } @else {
+          <p class="prediction-card__empty">
+            Você ainda não palpitou nesta partida.
+          </p>
+        }
+
+        @if (canPredict()) {
+          <div class="prediction-card__actions">
+            <button
+              type="button"
+              class="prediction-card__btn prediction-card__btn--primary"
+              (click)="openPredictionDialog()"
+            >
+              <lucide-icon [img]="sparklesIcon" [size]="16" />
+              {{ predictionActionLabel() }}
+            </button>
+            @if (myPrediction()) {
+              <button
+                type="button"
+                class="prediction-card__btn prediction-card__btn--ghost"
+                (click)="openRemovePredictionDialog()"
+              >
+                <lucide-icon [img]="trashIcon" [size]="16" />
+                Remover
+              </button>
+            }
+          </div>
+        } @else if (predictionBlockReason(); as reason) {
+          <p class="prediction-card__hint">{{ reason }}</p>
+        }
+      </article>
+    }
+
+    @if (isOwner() || isActiveMember()) {
+      <article class="predictions">
+        <header class="predictions__header">
+          <h3 class="predictions__title">Palpites</h3>
+          @if (sortedPredictions().length > 0) {
+            <span class="predictions__count">
+              {{ sortedPredictions().length }}
+              {{ sortedPredictions().length === 1 ? 'palpite' : 'palpites' }}
+            </span>
+          }
+        </header>
+
+        @if (allPredictionsLoading()) {
+          <div class="predictions__skeleton">
+            <div class="u-skeleton predictions__skeleton-row"></div>
+            <div class="u-skeleton predictions__skeleton-row"></div>
+          </div>
+        } @else if (allPredictionsLocked()) {
+          <p class="predictions__locked">
+            Os palpites ficam visíveis após o início da partida.
+          </p>
+        } @else if (sortedPredictions().length === 0) {
+          <p class="predictions__empty">
+            Ninguém palpitou nesta partida ainda.
+          </p>
+        } @else {
+          <ul class="predictions__list">
+            @for (p of sortedPredictions(); track p.id) {
+              <li
+                class="prediction-row"
+                [class.prediction-row--mine]="p.id === myPrediction()?.id"
+              >
+                <div class="prediction-row__user">
+                  <app-avatar [name]="p.userName" [size]="32" />
+                  <span class="prediction-row__name">
+                    {{ p.userName }}
+                    @if (p.id === myPrediction()?.id) {
+                      <span class="prediction-row__you">você</span>
+                    }
+                  </span>
+                </div>
+                <span class="prediction-row__score">
+                  {{ p.homeScore }}<span class="prediction-row__sep">×</span>{{ p.awayScore }}
+                </span>
+                @if (m.status === 'COMPLETED') {
+                  <span
+                    class="prediction-row__points"
+                    [class.prediction-row__points--zero]="p.points === 0"
+                  >
+                    +{{ p.points }}
+                  </span>
+                }
+              </li>
+            }
+          </ul>
+        }
+      </article>
+    }
+
+    <article class="match-info">
+      <header class="match-info__header">
+        <h3 class="match-info__title">Contexto</h3>
+      </header>
+      <dl class="match-info__list">
+        <div class="match-info__item">
+          <dt>
+            <lucide-icon [img]="calendarIcon" [size]="14" />
+            Rodada
+          </dt>
+          <dd>{{ m.round + 1 }}</dd>
+        </div>
+        @if (m.groupName) {
+          <div class="match-info__item">
+            <dt>
+              <lucide-icon [img]="usersIcon" [size]="14" />
+              Grupo
+            </dt>
+            <dd>{{ m.groupName }}</dd>
+          </div>
+        }
+        @if (isTwoLegged()) {
+          <div class="match-info__item">
+            <dt>
+              <lucide-icon [img]="arrowLeftRightIcon" [size]="14" />
+              Confronto
+            </dt>
+            <dd>Ida e volta</dd>
+          </div>
+        }
+        <div class="match-info__item match-info__item--mono">
+          <dt>
+            <lucide-icon [img]="hashIcon" [size]="14" />
+            ID da partida
+          </dt>
+          <dd class="match-info__id">{{ m.id }}</dd>
+        </div>
+      </dl>
+    </article>
+  }
+</section>
+
+<app-match-result-dialog
+  [open]="resultDialogOpen()"
+  [match]="match()"
+  [submitting]="resultSubmitting()"
+  [serverError]="resultError()"
+  (confirmed)="submitResult($event)"
+  (cancelled)="closeResultDialog()"
+/>
+
+<app-confirm-dialog
+  [open]="cancelDialogOpen()"
+  title="Cancelar partida?"
+  [description]="cancelDescription()"
+  confirmLabel="Cancelar partida"
+  cancelLabel="Voltar"
+  variant="destructive"
+  [loading]="cancelSubmitting()"
+  (confirmed)="confirmCancel()"
+  (cancelled)="closeCancelDialog()"
+/>
+
+<app-confirm-dialog
+  [open]="deleteDialogOpen()"
+  title="Excluir partida?"
+  [description]="deleteDescription()"
+  confirmLabel="Excluir definitivamente"
+  cancelLabel="Voltar"
+  variant="destructive"
+  [loading]="deleteSubmitting()"
+  (confirmed)="confirmDelete()"
+  (cancelled)="closeDeleteDialog()"
+/>
+
+<app-prediction-dialog
+  [open]="predictionDialogOpen()"
+  [match]="match()"
+  [current]="myPrediction()"
+  [submitting]="predictionSubmitting()"
+  [serverError]="predictionError()"
+  (confirmed)="submitPrediction($event)"
+  (cancelled)="closePredictionDialog()"
+/>
+
+<app-confirm-dialog
+  [open]="removePredictionDialogOpen()"
+  title="Remover palpite?"
+  description="Seu palpite atual será apagado. Você pode lançar um novo até o prazo da partida."
+  confirmLabel="Remover palpite"
+  cancelLabel="Voltar"
+  variant="destructive"
+  [loading]="removePredictionSubmitting()"
+  (confirmed)="confirmRemovePrediction()"
+  (cancelled)="closeRemovePredictionDialog()"
+/>

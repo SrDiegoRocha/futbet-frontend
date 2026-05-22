@@ -1,0 +1,247 @@
+.zform {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.zform__banner {
+  background-color: color-mix(in srgb, var(--warning) 14%, transparent);
+  color: var(--amber-700);
+  border: 1px solid color-mix(in srgb, var(--warning) 35%, transparent);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+}
+
+[data-theme='dark'] .zform__banner {
+  color: var(--amber-300);
+}
+
+.zform__alert {
+  background-color: color-mix(in srgb, var(--danger) 12%, transparent);
+  color: var(--danger);
+  border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+}
+
+.zform__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.zform__section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.zform__section-title {
+  font-size: var(--text-lg);
+  line-height: var(--lh-lg);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.zform__section-subtitle {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: var(--lh-sm);
+}
+
+.zform__options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-2);
+}
+
+.zform__option {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  align-items: start;
+  gap: 2px var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background-color var(--duration-fast) var(--easing-default),
+    border-color var(--duration-fast) var(--easing-default),
+    box-shadow var(--duration-fast) var(--easing-default);
+}
+
+.zform__option:hover:not(:disabled) {
+  border-color: var(--border-strong);
+}
+
+.zform__option--active {
+  background-color: var(--brand-subtle);
+  border-color: var(--brand);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand) 25%, transparent);
+}
+
+[data-theme='dark'] .zform__option--active {
+  background-color: color-mix(in srgb, var(--brand) 18%, transparent);
+}
+
+.zform__option:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.zform__option-icon {
+  grid-row: 1 / span 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-muted);
+  color: var(--text-secondary);
+}
+
+.zform__option--active .zform__option-icon {
+  background-color: var(--brand);
+  color: var(--text-on-brand);
+}
+
+.zform__option-name {
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  font-size: var(--text-base);
+}
+
+.zform__option-desc {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  line-height: var(--lh-xs);
+}
+
+.zform__grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.zform__field-error {
+  font-size: var(--text-xs);
+  color: var(--danger);
+  font-weight: var(--font-medium);
+  margin: 0;
+}
+
+.zform__select-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.zform__select-label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-secondary);
+}
+
+.zform__select {
+  appearance: none;
+  -webkit-appearance: none;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  padding: var(--space-3) var(--space-9) var(--space-3) var(--space-3);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  outline: none;
+  min-height: 48px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) 50%,
+    calc(100% - 12px) 50%;
+  background-size:
+    6px 6px,
+    6px 6px;
+  background-repeat: no-repeat;
+  color: var(--text-primary);
+  transition:
+    border-color var(--duration-fast) var(--easing-default),
+    box-shadow var(--duration-fast) var(--easing-default);
+  cursor: pointer;
+}
+
+.zform__select:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 20%, transparent);
+}
+
+.zform__select:disabled {
+  background-color: var(--bg-muted);
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.zform__select-helper {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.zform__actions {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.zform__danger {
+  margin-top: var(--space-2);
+  padding: var(--space-4);
+  border: 1px solid color-mix(in srgb, var(--danger) 35%, transparent);
+  border-radius: var(--radius-lg);
+  background-color: color-mix(in srgb, var(--danger) 5%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: flex-start;
+}
+
+.zform__danger-title {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--danger);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.zform__danger-text {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: var(--lh-base);
+}
+
+@media (min-width: 640px) {
+  .zform__options {
+    grid-template-columns: 1fr 1fr;
+  }
+  .zform__actions {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+  .zform__actions app-button {
+    min-width: 160px;
+  }
+}

@@ -1,8 +1,31 @@
 <section class="page">
   <header class="page__header">
-    <h1 class="page__title">Meus torneios</h1>
-    <p class="page__subtitle">Torneios criados por você</p>
+    <h1 class="page__title">Torneios</h1>
+    <p class="page__subtitle">Acompanhe torneios que você criou ou participa</p>
   </header>
+
+  <div class="page__tabs" role="tablist" aria-label="Tipo de torneio">
+    <button
+      type="button"
+      role="tab"
+      class="page__tab"
+      [class.page__tab--active]="tab() === 'mine'"
+      [attr.aria-selected]="tab() === 'mine'"
+      (click)="setTab('mine')"
+    >
+      Criados
+    </button>
+    <button
+      type="button"
+      role="tab"
+      class="page__tab"
+      [class.page__tab--active]="tab() === 'joined'"
+      [attr.aria-selected]="tab() === 'joined'"
+      (click)="setTab('joined')"
+    >
+      Participo
+    </button>
+  </div>
 
   @if (loading()) {
     <div class="page__grid">
@@ -11,27 +34,65 @@
       }
     </div>
   } @else if (errorMessage(); as err) {
-    <div class="page__error" role="alert">
-      <p class="page__error-text">{{ err }}</p>
-      <app-button
-        variant="brand-outline"
-        size="md"
-        (buttonClick)="retry()"
-      >
-        Tentar novamente
-      </app-button>
-    </div>
-  } @else if (isEmpty()) {
-    <app-empty-state
-      [icon]="trophyIcon"
-      title="Você ainda não criou nenhum torneio"
-      description="Quando criar seu primeiro torneio, ele aparece aqui."
+    <app-error-state
+      title="Não foi possível carregar os torneios"
+      [message]="err"
+      [canRetry]="true"
+      [retrying]="loading()"
+      (retry)="retry()"
     />
+  } @else if (isEmpty()) {
+    @if (showJoined()) {
+      <app-empty-state
+        [icon]="usersIcon"
+        title="Você não participa de nenhum torneio"
+        description="Entre num torneio usando o código de convite recebido."
+      >
+        <a class="page__empty-cta" routerLink="/join">
+          Entrar com código
+        </a>
+      </app-empty-state>
+    } @else {
+      <app-empty-state
+        [icon]="trophyIcon"
+        title="Você ainda não criou nenhum torneio"
+        description="Crie seu primeiro torneio e comece a palpitar com os amigos."
+      >
+        <a class="page__empty-cta" routerLink="/tournaments/new">
+          Criar primeiro torneio
+        </a>
+      </app-empty-state>
+    }
   } @else {
     <div class="page__grid" [@listStagger]="items().length">
       @for (t of items(); track t.id) {
-        <app-tournament-card [tournament]="t" />
+        <a
+          class="page__card-link"
+          [routerLink]="['/tournaments', t.id]"
+          [attr.aria-label]="'Ver torneio ' + t.name"
+        >
+          <app-tournament-card
+            [tournament]="t"
+            [showOwner]="showJoined()"
+          />
+        </a>
       }
     </div>
   }
 </section>
+
+@if (showJoined()) {
+  <app-fab
+    routerPath="/join"
+    ariaLabel="Entrar em torneio com código"
+    label="Entrar"
+    [icon]="ticketIcon"
+  />
+} @else {
+  <app-fab
+    routerPath="/tournaments/new"
+    ariaLabel="Criar novo torneio"
+    label="Novo torneio"
+    [icon]="plusIcon"
+  />
+}

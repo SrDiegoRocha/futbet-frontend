@@ -32,7 +32,13 @@
   } @else {
     <div class="page__grid" [@listStagger]="items().length">
       @for (t of items(); track t.id) {
-        <app-tournament-card [tournament]="t" [showOwner]="true" />
+        <a
+          class="page__card-link"
+          [routerLink]="['/tournaments', t.id]"
+          [attr.aria-label]="'Ver torneio ' + t.name"
+        >
+          <app-tournament-card [tournament]="t" [showOwner]="true" />
+        </a>
       }
     </div>
   }

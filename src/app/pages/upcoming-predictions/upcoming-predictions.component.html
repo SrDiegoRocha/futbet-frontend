@@ -1,0 +1,97 @@
+<section class="page">
+  <app-page-header
+    title="Próximos palpites"
+    subtitle="Partidas com deadline em até 7 dias"
+    backTo="/tournaments"
+  />
+
+  @if (loading()) {
+    <div class="page__skeleton">
+      <div class="u-skeleton page__skeleton-row"></div>
+      <div class="u-skeleton page__skeleton-row"></div>
+      <div class="u-skeleton page__skeleton-row"></div>
+    </div>
+  } @else if (loadError(); as err) {
+    <app-error-state
+      title="Não foi possível carregar os próximos palpites"
+      [message]="err"
+      [canRetry]="true"
+      [retrying]="loading()"
+      (retry)="retry()"
+    />
+  } @else if (upcoming().length === 0) {
+    <app-empty-state
+      [icon]="sparklesIcon"
+      title="Tudo em dia!"
+      description="Você não tem partidas pendentes nos próximos 7 dias. Volte mais perto da próxima rodada."
+    />
+  } @else {
+    <div class="summary">
+      <span class="summary__value">{{ pendingCount() }}</span>
+      <span class="summary__label">
+        partida{{ pendingCount() === 1 ? '' : 's' }} sem palpite
+      </span>
+    </div>
+
+    <ul class="rows" [@listStagger]="upcoming().length">
+      @for (item of upcoming(); track item.match.id) {
+        <li>
+          <a
+            class="row"
+            [class.row--pending]="!item.hasPrediction"
+            [routerLink]="matchLink(item)"
+          >
+            <header class="row__top">
+              <span class="row__tournament">
+                {{ item.tournament.name }}
+              </span>
+              <span class="row__countdown">
+                {{ countdownLabel(item.hoursUntil) }}
+              </span>
+            </header>
+
+            <div class="row__teams">
+              <div class="row__side">
+                <app-team-badge
+                  [name]="item.match.homeTeam.name"
+                  [shortName]="item.match.homeTeam.shortName"
+                  [badgeUrl]="item.match.homeTeam.badgeUrl"
+                  [size]="32"
+                />
+                <span class="row__team-name">
+                  {{ item.match.homeTeam.name }}
+                </span>
+              </div>
+              <span class="row__vs">vs</span>
+              <div class="row__side row__side--away">
+                <app-team-badge
+                  [name]="item.match.awayTeam.name"
+                  [shortName]="item.match.awayTeam.shortName"
+                  [badgeUrl]="item.match.awayTeam.badgeUrl"
+                  [size]="32"
+                />
+                <span class="row__team-name">
+                  {{ item.match.awayTeam.name }}
+                </span>
+              </div>
+            </div>
+
+            <footer class="row__footer">
+              <span class="row__time">
+                {{ scheduledLabel(item.match.scheduledAt) }}
+              </span>
+              @if (item.hasPrediction) {
+                <span class="row__status row__status--done">Palpitado</span>
+              } @else {
+                <span class="row__status row__status--pending">
+                  Palpitar
+                  <lucide-icon [img]="chevronRightIcon" [size]="14" />
+                </span>
+              }
+            </footer>
+          </a>
+        </li>
+      }
+    </ul>
+  }
+</section>

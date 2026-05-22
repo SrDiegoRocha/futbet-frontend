@@ -17,4 +17,14 @@ export class StandingsService {
       `${this._baseUrl}/api/tournaments/${tournamentId}/phases/${phaseId}/standings`,
     );
   }
+
+  public finalize(
+    tournamentId: string,
+    phaseId: string,
+  ): Observable<IStandingsResponse> {
+    return this._http.post<IStandingsResponse>(
+      `${this._baseUrl}/api/tournaments/${tournamentId}/phases/${phaseId}/finalize`,
+      {},
+    );
+  }
 }

@@ -1,0 +1,50 @@
+<section class="page">
+  <app-page-header
+    title="Editar torneio"
+    [subtitle]="tournament()?.name ?? ''"
+    [backTo]="backToHref()"
+  />
+
+  @if (loading()) {
+    <div class="page__skeleton">
+      <div class="u-skeleton page__skeleton-line"></div>
+      <div class="u-skeleton page__skeleton-line"></div>
+      <div class="u-skeleton page__skeleton-line"></div>
+      <div class="u-skeleton page__skeleton-line"></div>
+      <div class="u-skeleton page__skeleton-line"></div>
+    </div>
+  } @else if (loadError(); as err) {
+    <div class="page__error" role="alert">
+      <p class="page__error-text">{{ err }}</p>
+      <app-button
+        variant="brand-outline"
+        size="md"
+        (buttonClick)="backToList()"
+      >
+        Voltar para Meus torneios
+      </app-button>
+    </div>
+  } @else if (tournament(); as t) {
+    <app-tournament-form
+      [initial]="t"
+      mode="edit"
+      [submitting]="submitting()"
+      [deleting]="deleting()"
+      [serverError]="serverError()"
+      (saveForm)="save($event)"
+      (deleteTournament)="requestDelete()"
+      (cancelForm)="cancel()"
+    />
+  }
+
+  <app-confirm-dialog
+    [open]="confirmDeleteOpen()"
+    title="Excluir torneio?"
+    description="Esta ação não pode ser desfeita. O torneio some das suas listas e os participantes não poderão mais acessá-lo."
+    confirmLabel="Excluir torneio"
+    variant="destructive"
+    [loading]="deleting()"
+    (confirmed)="confirmDelete()"
+    (cancelled)="cancelDelete()"
+  />
+</section>

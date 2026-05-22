@@ -1,0 +1,124 @@
+<section class="page">
+  <app-page-header
+    title="Fases"
+    [subtitle]="tournament()?.name ?? ''"
+    [backTo]="backToHref()"
+  />
+
+  @if (loading()) {
+    <div class="page__skeleton">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="u-skeleton page__skeleton-row"></div>
+      }
+    </div>
+  } @else if (loadError(); as err) {
+    <div class="page__error" role="alert">
+      <p class="page__error-text">{{ err }}</p>
+    </div>
+  } @else {
+    @if (statusBanner(); as banner) {
+      <div class="page__banner" role="status">{{ banner }}</div>
+    }
+
+    @if (phases().length === 0) {
+      <app-empty-state
+        [icon]="workflowIcon"
+        title="Nenhuma fase configurada"
+        [description]="
+          canEdit()
+            ? 'Crie a primeira fase pra estruturar este torneio.'
+            : 'O organizador ainda não configurou as fases.'
+        "
+      >
+        @if (canEdit() && newPhaseHref(); as href) {
+          <a class="page__empty-cta" [routerLink]="href">
+            Criar primeira fase
+          </a>
+        }
+      </app-empty-state>
+    } @else {
+      <ol
+        class="phases"
+        cdkDropList
+        (cdkDropListDropped)="onDrop($event)"
+        [@listStagger]="phases().length"
+      >
+        @for (phase of phases(); track phase.id; let i = $index) {
+          <li
+            class="phase"
+            cdkDrag
+            [cdkDragDisabled]="!canEdit() || reordering()"
+          >
+            @if (canEdit()) {
+              <button
+                type="button"
+                class="phase__grip"
+                cdkDragHandle
+                [attr.aria-label]="'Reordenar fase ' + phase.name"
+                [disabled]="reordering()"
+              >
+                <lucide-icon [img]="gripIcon" [size]="18" />
+              </button>
+            }
+
+            <a
+              class="phase__main"
+              [routerLink]="['/tournaments', tournament()?.id, 'phases', phase.id]"
+            >
+              <div class="phase__position" aria-hidden="true">
+                {{ i + 1 }}
+              </div>
+
+              <div class="phase__body">
+                <div class="phase__title-row">
+                  <h3 class="phase__name">{{ phase.name }}</h3>
+                  <span
+                    class="phase__type"
+                    [class.phase__type--round]="phase.phaseType === 'ROUND_ROBIN'"
+                    [class.phase__type--knockout]="phase.phaseType === 'KNOCKOUT'"
+                    [class.phase__type--groups]="phase.phaseType === 'GROUPS'"
+                  >
+                    {{ phaseTypeLabel(phase.phaseType) }}
+                  </span>
+                </div>
+
+                <div class="phase__meta">
+                  <span>{{ legLabel(phase.matchLegMode) }}</span>
+                  <span class="phase__meta-sep">·</span>
+                  <span>{{ genLabel(phase.matchGenerationMode) }}</span>
+                </div>
+
+                <div class="phase__counts">
+                  <span class="phase__count">
+                    <strong>{{ phase.teamCount }}</strong> times
+                  </span>
+                  @if (phase.phaseType === 'GROUPS') {
+                    <span class="phase__count">
+                      <strong>{{ phase.groupCount }}</strong> grupos
+                    </span>
+                  }
+                </div>
+              </div>
+
+              <lucide-icon
+                class="phase__chevron"
+                [img]="chevronRightIcon"
+                [size]="18"
+                aria-hidden="true"
+              />
+            </a>
+          </li>
+        }
+      </ol>
+    }
+  }
+</section>
+
+@if (canEdit() && phases().length > 0 && newPhaseHref(); as href) {
+  <app-fab
+    [routerPath]="href"
+    ariaLabel="Criar nova fase"
+    label="Nova fase"
+    [icon]="plusIcon"
+  />
+}

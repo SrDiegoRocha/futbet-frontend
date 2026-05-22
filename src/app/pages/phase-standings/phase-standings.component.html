@@ -1,0 +1,122 @@
+<section class="page">
+  <app-page-header
+    title="Classificação"
+    [subtitle]="phase()?.name ?? ''"
+    [backTo]="backToHref()"
+  />
+
+  @if (loading()) {
+    <div class="page__skeleton">
+      <div class="u-skeleton page__skeleton-row"></div>
+      <div class="u-skeleton page__skeleton-row"></div>
+      <div class="u-skeleton page__skeleton-row"></div>
+    </div>
+  } @else if (loadError(); as err) {
+    <div class="page__error" role="alert">
+      <p class="page__error-text">{{ err }}</p>
+    </div>
+  } @else if (standings(); as s) {
+    @if (isEmpty()) {
+      <app-empty-state
+        [icon]="trophyIcon"
+        title="Sem classificação ainda"
+        description="A tabela aparece assim que houver partidas concluídas nesta fase."
+      />
+    } @else {
+      <div class="groups" [@listStagger]="s.groups.length">
+        @for (group of s.groups; track group.groupId ?? '__no_group__') {
+          <article class="standings">
+            @if (group.groupName) {
+              <header class="standings__header">
+                <h2 class="standings__title">Grupo {{ group.groupName }}</h2>
+              </header>
+            }
+            <div class="standings__scroll" role="region" aria-label="Tabela de classificação">
+              <table class="standings__table">
+                <thead>
+                  <tr>
+                    <th scope="col" class="standings__th standings__th--pos">#</th>
+                    <th scope="col" class="standings__th standings__th--team">Time</th>
+                    <th scope="col" class="standings__th">P</th>
+                    <th scope="col" class="standings__th">J</th>
+                    <th scope="col" class="standings__th">V</th>
+                    <th scope="col" class="standings__th">E</th>
+                    <th scope="col" class="standings__th">D</th>
+                    <th scope="col" class="standings__th">GP</th>
+                    <th scope="col" class="standings__th">GC</th>
+                    <th scope="col" class="standings__th">SG</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (row of group.rows; track row.teamId) {
+                    <tr class="standings__row">
+                      <td class="standings__cell standings__cell--pos">
+                        {{ row.position }}
+                      </td>
+                      <td class="standings__cell standings__cell--team">
+                        <app-team-badge
+                          [name]="row.teamName"
+                          [shortName]="row.shortName"
+                          [badgeUrl]="row.badgeUrl"
+                          [size]="24"
+                        />
+                        <span class="standings__team-name">{{ row.teamName }}</span>
+                      </td>
+                      <td class="standings__cell standings__cell--points">
+                        {{ row.points }}
+                      </td>
+                      <td class="standings__cell">{{ row.played }}</td>
+                      <td class="standings__cell">{{ row.wins }}</td>
+                      <td class="standings__cell">{{ row.draws }}</td>
+                      <td class="standings__cell">{{ row.losses }}</td>
+                      <td class="standings__cell">{{ row.goalsFor }}</td>
+                      <td class="standings__cell">{{ row.goalsAgainst }}</td>
+                      <td class="standings__cell">{{ row.goalDifference }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </article>
+        }
+      </div>
+    }
+
+    @if (isOwner() && tournament()?.status !== 'FINISHED') {
+      <article class="finalize">
+        <header class="finalize__header">
+          <h3 class="finalize__title">Finalizar fase</h3>
+          <p class="finalize__subtitle">
+            Materializa os times classificados como participantes da próxima fase
+            (segundo as zonas configuradas).
+          </p>
+        </header>
+
+        <button
+          type="button"
+          class="finalize__btn"
+          [disabled]="!canFinalize()"
+          (click)="openFinalizeDialog()"
+        >
+          <lucide-icon [img]="flagIcon" [size]="16" />
+          Finalizar fase
+        </button>
+
+        @if (finalizeBlockReason(); as reason) {
+          <p class="finalize__hint">{{ reason }}</p>
+        }
+      </article>
+    }
+  }
+</section>
+
+<app-confirm-dialog
+  [open]="finalizeDialogOpen()"
+  title="Finalizar fase?"
+  description="Os times nas faixas definidas em cada zona vão para a próxima fase. Essa ação é idempotente, mas só funciona enquanto a próxima fase não tiver times."
+  confirmLabel="Finalizar agora"
+  cancelLabel="Voltar"
+  [loading]="finalizing()"
+  (confirmed)="confirmFinalize()"
+  (cancelled)="closeFinalizeDialog()"
+/>

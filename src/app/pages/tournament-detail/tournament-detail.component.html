@@ -1,0 +1,290 @@
+<section class="page">
+  <app-page-header
+    title="Torneio"
+    [subtitle]="tournament()?.name ?? ''"
+    backTo="/tournaments"
+  />
+
+  @if (loading()) {
+    <div class="page__skeleton">
+      <div class="u-skeleton page__skeleton-hero"></div>
+      <div class="u-skeleton page__skeleton-line"></div>
+      <div class="u-skeleton page__skeleton-line"></div>
+    </div>
+  } @else if (loadError(); as err) {
+    <div class="page__error" role="alert">
+      <p class="page__error-text">{{ err }}</p>
+      <a class="page__error-cta" routerLink="/tournaments">
+        Voltar para Meus torneios
+      </a>
+    </div>
+  } @else if (tournament(); as t) {
+    <article class="detail__hero">
+      <div class="detail__badges">
+        <span [class]="statusClass()">{{ statusLabel() }}</span>
+        <span class="detail__privacy">
+          @if (t.privacy === 'PRIVATE') {
+            <lucide-icon [img]="lockIcon" [size]="14" />
+          } @else {
+            <lucide-icon [img]="globeIcon" [size]="14" />
+          }
+          {{ privacyLabel() }}
+        </span>
+      </div>
+
+      <h2 class="detail__name">{{ t.name }}</h2>
+
+      @if (t.description) {
+        <p class="detail__description">{{ t.description }}</p>
+      }
+
+      <div class="detail__meta">
+        <span class="detail__meta-item">
+          <lucide-icon [img]="usersIcon" [size]="14" />
+          <strong>{{ memberCountLabel() }}</strong> participantes
+        </span>
+        <span class="detail__meta-sep">·</span>
+        <span class="detail__meta-item">
+          <strong>{{ teamCountLabel() }}</strong> times
+        </span>
+        <span class="detail__meta-sep">·</span>
+        <span class="detail__meta-item">
+          criado em <strong>{{ createdAtLabel() }}</strong>
+        </span>
+      </div>
+
+      <div class="detail__owner">
+        por <strong>{{ t.owner.name }}</strong>
+      </div>
+    </article>
+
+    <nav class="detail__quick-nav" aria-label="Subseções do torneio">
+      <a
+        class="detail__quick-link"
+        [routerLink]="['/tournaments', t.id, 'members']"
+      >
+        <span class="detail__quick-icon" aria-hidden="true">
+          <lucide-icon [img]="usersIcon" [size]="20" />
+        </span>
+        <div class="detail__quick-info">
+          <span class="detail__quick-count">{{ t.memberCount }}</span>
+          <span class="detail__quick-label">Membros</span>
+        </div>
+        <lucide-icon
+          class="detail__quick-chevron"
+          [img]="chevronRightIcon"
+          [size]="18"
+          aria-hidden="true"
+        />
+      </a>
+      <a
+        class="detail__quick-link"
+        [routerLink]="['/tournaments', t.id, 'teams']"
+      >
+        <span class="detail__quick-icon" aria-hidden="true">
+          <lucide-icon [img]="trophyIcon" [size]="20" />
+        </span>
+        <div class="detail__quick-info">
+          <span class="detail__quick-count">{{ t.teamCount }}</span>
+          <span class="detail__quick-label">Times</span>
+        </div>
+        <lucide-icon
+          class="detail__quick-chevron"
+          [img]="chevronRightIcon"
+          [size]="18"
+          aria-hidden="true"
+        />
+      </a>
+      <a
+        class="detail__quick-link"
+        [routerLink]="['/tournaments', t.id, 'phases']"
+      >
+        <span class="detail__quick-icon" aria-hidden="true">
+          <lucide-icon [img]="workflowIcon" [size]="20" />
+        </span>
+        <div class="detail__quick-info">
+          <span class="detail__quick-label-strong">Fases</span>
+          <span class="detail__quick-label">Estrutura do torneio</span>
+        </div>
+        <lucide-icon
+          class="detail__quick-chevron"
+          [img]="chevronRightIcon"
+          [size]="18"
+          aria-hidden="true"
+        />
+      </a>
+      <a
+        class="detail__quick-link"
+        [routerLink]="['/tournaments', t.id, 'ranking']"
+      >
+        <span class="detail__quick-icon" aria-hidden="true">
+          <lucide-icon [img]="medalIcon" [size]="20" />
+        </span>
+        <div class="detail__quick-info">
+          <span class="detail__quick-label-strong">Ranking</span>
+          <span class="detail__quick-label">Pontuação dos participantes</span>
+        </div>
+        <lucide-icon
+          class="detail__quick-chevron"
+          [img]="chevronRightIcon"
+          [size]="18"
+          aria-hidden="true"
+        />
+      </a>
+      <a
+        class="detail__quick-link"
+        [routerLink]="['/tournaments', t.id, 'predictions', 'me']"
+      >
+        <span class="detail__quick-icon" aria-hidden="true">
+          <lucide-icon [img]="sparklesIcon" [size]="20" />
+        </span>
+        <div class="detail__quick-info">
+          <span class="detail__quick-label-strong">Meus palpites</span>
+          <span class="detail__quick-label">
+            Histórico e pontos no torneio
+          </span>
+        </div>
+        <lucide-icon
+          class="detail__quick-chevron"
+          [img]="chevronRightIcon"
+          [size]="18"
+          aria-hidden="true"
+        />
+      </a>
+    </nav>
+
+    <article class="detail__invite">
+      <p class="detail__invite-label">Código de convite</p>
+      <div class="detail__invite-code-row">
+        <code class="detail__invite-code">{{ t.inviteCode }}</code>
+        <button
+          type="button"
+          class="detail__icon-btn"
+          (click)="copyCode()"
+          aria-label="Copiar código"
+          title="Copiar código"
+        >
+          <lucide-icon [img]="copyIcon" [size]="16" />
+        </button>
+        @if (isOwner()) {
+          <button
+            type="button"
+            class="detail__icon-btn detail__icon-btn--warning"
+            (click)="requestRegenerate()"
+            aria-label="Regenerar código"
+            title="Regenerar código"
+            [disabled]="regenerating()"
+          >
+            <lucide-icon [img]="refreshIcon" [size]="16" />
+          </button>
+        }
+      </div>
+      <p class="detail__invite-hint">
+        @if (isOwner()) {
+          Compartilhe esse código com quem você quer convidar. Regenerar
+          invalida o código anterior imediatamente.
+        } @else {
+          Use este código para convidar mais participantes.
+        }
+      </p>
+    </article>
+
+    <article class="detail__card">
+      <header class="detail__card-header">
+        <h3 class="detail__card-title">Pontuação</h3>
+      </header>
+      <dl class="detail__points">
+        <div class="detail__points-item">
+          <dt>Vitória</dt>
+          <dd>{{ t.settings.winPoints }}</dd>
+        </div>
+        <div class="detail__points-item">
+          <dt>Empate</dt>
+          <dd>{{ t.settings.drawPoints }}</dd>
+        </div>
+        <div class="detail__points-item">
+          <dt>Derrota</dt>
+          <dd>{{ t.settings.lossPoints }}</dd>
+        </div>
+        <div class="detail__points-item">
+          <dt>Placar exato</dt>
+          <dd>{{ t.settings.exactScorePoints }}</dd>
+        </div>
+        <div class="detail__points-item">
+          <dt>Acertou vencedor</dt>
+          <dd>{{ t.settings.winnerPoints }}</dd>
+        </div>
+        <div class="detail__points-item">
+          <dt>Errou tudo</dt>
+          <dd>{{ t.settings.wrongPoints }}</dd>
+        </div>
+      </dl>
+    </article>
+
+    <article class="detail__card">
+      <header class="detail__card-header">
+        <h3 class="detail__card-title">Critérios de desempate</h3>
+        <p class="detail__card-subtitle">Ordem importa</p>
+      </header>
+      <ol class="detail__tiebreak">
+        @for (criterion of t.settings.tiebreakCriteria; track criterion) {
+          <li class="detail__tiebreak-item">{{ tiebreakLabel(criterion) }}</li>
+        }
+      </ol>
+    </article>
+
+    @if (isOwner()) {
+      <article class="detail__actions">
+        <header class="detail__card-header">
+          <h3 class="detail__card-title">Ações do organizador</h3>
+        </header>
+
+        @if (statusContext(); as ctx) {
+          <app-button
+            [variant]="ctx.variant === 'destructive' ? 'destructive' : 'primary'"
+            size="lg"
+            [fullWidth]="true"
+            [loading]="changingStatus()"
+            (buttonClick)="requestStatusChange()"
+          >
+            @if (ctx.buttonIcon === 'play') {
+              <lucide-icon [img]="playIcon" [size]="18" />
+            } @else {
+              <lucide-icon [img]="flagIcon" [size]="18" />
+            }
+            {{ ctx.buttonLabel }}
+          </app-button>
+        }
+
+        <a class="detail__edit-link" [routerLink]="['/tournaments', t.id, 'edit']">
+          <lucide-icon [img]="pencilIcon" [size]="16" />
+          Editar configurações
+        </a>
+      </article>
+    }
+
+    @if (statusContext(); as ctx) {
+      <app-confirm-dialog
+        [open]="statusDialogOpen()"
+        [title]="ctx.title"
+        [description]="ctx.description"
+        [confirmLabel]="ctx.confirmLabel"
+        [variant]="ctx.variant"
+        [loading]="changingStatus()"
+        (confirmed)="confirmStatusChange()"
+        (cancelled)="cancelStatusChange()"
+      />
+    }
+
+    <app-confirm-dialog
+      [open]="regenerateDialogOpen()"
+      title="Regenerar código?"
+      description="O código atual deixa de funcionar imediatamente. Quem ainda não entrou precisará do novo código."
+      confirmLabel="Regenerar código"
+      variant="default"
+      [loading]="regenerating()"
+      (confirmed)="confirmRegenerate()"
+      (cancelled)="cancelRegenerate()"
+    />
+  }
+</section>

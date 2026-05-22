@@ -1,0 +1,122 @@
+<section class="page">
+  <app-page-header
+    title="Zonas"
+    [subtitle]="phase()?.name ?? ''"
+    [backTo]="backToHref()"
+  />
+
+  @if (loading()) {
+    <div class="page__skeleton">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="u-skeleton page__skeleton-row"></div>
+      }
+    </div>
+  } @else if (loadError(); as err) {
+    <div class="page__error" role="alert">
+      <p class="page__error-text">{{ err }}</p>
+    </div>
+  } @else {
+    @if (statusBanner(); as banner) {
+      <div class="page__banner" role="status">{{ banner }}</div>
+    }
+
+    @if (zones().length === 0) {
+      <app-empty-state
+        [icon]="workflowIcon"
+        title="Nenhuma zona configurada"
+        [description]="
+          canEdit()
+            ? 'Defina o que acontece com os times de cada posição ao fim desta fase.'
+            : 'O organizador ainda não definiu as regras de avanço para esta fase.'
+        "
+      >
+        @if (canEdit() && newZoneHref(); as href) {
+          <a class="page__empty-cta" [routerLink]="href">
+            Criar primeira zona
+          </a>
+        }
+      </app-empty-state>
+    } @else {
+      <ul class="zones" [@listStagger]="zones().length">
+        @for (zone of zones(); track zone.id) {
+          <li
+            class="zone"
+            [class.zone--advances]="zone.nextPhaseId !== null"
+            [class.zone--eliminates]="zone.nextPhaseId === null"
+          >
+            <header class="zone__header">
+              <span class="zone__range">{{ zoneRangeLabel(zone) }}</span>
+              @if (zone.selectionMode === 'BEST_RANKED') {
+                <span class="zone__mode-badge">
+                  <lucide-icon [img]="awardIcon" [size]="12" />
+                  Melhor classificado · top {{ zone.bestRankedCount }}
+                </span>
+              }
+            </header>
+
+            <h3 class="zone__name">{{ zone.name }}</h3>
+
+            <div class="zone__destination">
+              @if (zone.nextPhaseId !== null) {
+                <span class="zone__destination-icon zone__destination-icon--advances" aria-hidden="true">
+                  <lucide-icon [img]="arrowRightIcon" [size]="16" />
+                </span>
+                <span class="zone__destination-text">
+                  Avança para
+                  <strong>{{ zone.nextPhaseName }}</strong>
+                </span>
+              } @else {
+                <span class="zone__destination-icon zone__destination-icon--eliminates" aria-hidden="true">
+                  <lucide-icon [img]="targetIcon" [size]="16" />
+                </span>
+                <span class="zone__destination-text">
+                  <strong>Eliminado</strong> · sem fase seguinte
+                </span>
+              }
+            </div>
+
+            @if (canEdit()) {
+              <div class="zone__actions">
+                @if (zoneEditHref(zone); as href) {
+                  <a class="zone__icon-btn" [routerLink]="href">
+                    <lucide-icon [img]="pencilIcon" [size]="14" />
+                    Editar
+                  </a>
+                }
+                <button
+                  type="button"
+                  class="zone__icon-btn zone__icon-btn--danger"
+                  (click)="requestDelete(zone)"
+                  [attr.aria-label]="'Excluir zona ' + zone.name"
+                >
+                  <lucide-icon [img]="trashIcon" [size]="14" />
+                  Excluir
+                </button>
+              </div>
+            }
+          </li>
+        }
+      </ul>
+    }
+  }
+</section>
+
+@if (canEdit() && zones().length > 0 && newZoneHref(); as href) {
+  <app-fab
+    [routerPath]="href"
+    ariaLabel="Criar nova zona"
+    label="Nova zona"
+    [icon]="plusIcon"
+  />
+}
+
+<app-confirm-dialog
+  [open]="confirmDelete() !== null"
+  title="Excluir zona?"
+  [description]="deleteDescription()"
+  confirmLabel="Excluir zona"
+  variant="destructive"
+  [loading]="deleting()"
+  (confirmed)="confirmDeleteAction()"
+  (cancelled)="cancelDelete()"
+/>

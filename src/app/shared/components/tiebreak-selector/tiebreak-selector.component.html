@@ -1,0 +1,55 @@
+<div class="tiebreak" [class.tiebreak--disabled]="disabled()">
+  <div
+    class="tiebreak__selected"
+    cdkDropList
+    (cdkDropListDropped)="onDrop($event)"
+  >
+    @for (criterion of value(); track criterion; let i = $index) {
+      <div class="tiebreak__chip" cdkDrag [cdkDragDisabled]="disabled()">
+        <span class="tiebreak__order">{{ i + 1 }}</span>
+        <button
+          type="button"
+          class="tiebreak__grip"
+          cdkDragHandle
+          [attr.aria-label]="'Arrastar ' + labelOf(criterion)"
+          [disabled]="disabled()"
+        >
+          <lucide-icon [img]="gripIcon" [size]="16" />
+        </button>
+        <span class="tiebreak__label">{{ labelOf(criterion) }}</span>
+        <button
+          type="button"
+          class="tiebreak__remove"
+          (click)="remove(criterion)"
+          [disabled]="disabled()"
+          [attr.aria-label]="'Remover ' + labelOf(criterion)"
+        >
+          <lucide-icon [img]="xIcon" [size]="14" />
+        </button>
+      </div>
+    } @empty {
+      <p class="tiebreak__empty">
+        Selecione ao menos um critério abaixo.
+      </p>
+    }
+  </div>
+
+  @if (available().length > 0) {
+    <div class="tiebreak__available">
+      <p class="tiebreak__available-label">Adicionar critério:</p>
+      <div class="tiebreak__available-list">
+        @for (criterion of available(); track criterion) {
+          <button
+            type="button"
+            class="tiebreak__add-btn"
+            (click)="add(criterion)"
+            [disabled]="disabled()"
+          >
+            <lucide-icon [img]="plusIcon" [size]="14" />
+            {{ labelOf(criterion) }}
+          </button>
+        }
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,31 @@
+<section class="page">
+  <app-page-header
+    title="Criar fase"
+    [subtitle]="tournament()?.name ?? ''"
+    [backTo]="backToHref()"
+  />
+
+  @if (loading()) {
+    <div class="page__skeleton">
+      <div class="u-skeleton page__skeleton-line"></div>
+      <div class="u-skeleton page__skeleton-line"></div>
+      <div class="u-skeleton page__skeleton-line"></div>
+    </div>
+  } @else if (loadError(); as err) {
+    <div class="page__error" role="alert">
+      <p class="page__error-text">{{ err }}</p>
+      <app-button variant="brand-outline" size="md" (buttonClick)="cancel()">
+        Voltar
+      </app-button>
+    </div>
+  } @else {
+    <app-phase-form
+      mode="create"
+      [tournamentStatus]="tournamentStatus()"
+      [submitting]="submitting()"
+      [serverError]="serverError()"
+      (saveForm)="save($event)"
+      (cancelForm)="cancel()"
+    />
+  }
+</section>

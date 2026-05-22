@@ -1,0 +1,174 @@
+<section class="page">
+  <app-page-header
+    title="Times do torneio"
+    [subtitle]="tournament()?.name ?? ''"
+    [backTo]="backToHref()"
+  />
+
+  @if (loading()) {
+    <div class="page__grid">
+      @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+        <div class="u-skeleton page__skeleton-card"></div>
+      }
+    </div>
+  } @else if (loadError(); as err) {
+    <div class="page__error" role="alert">
+      <p class="page__error-text">{{ err }}</p>
+    </div>
+  } @else if (linkedTeams().length === 0) {
+    <app-empty-state
+      [icon]="trophyIcon"
+      title="Nenhum time vinculado"
+      [description]="
+        canEdit()
+          ? 'Vincule times pra usar nas partidas deste torneio.'
+          : 'O organizador ainda não vinculou nenhum time.'
+      "
+    >
+      @if (canEdit()) {
+        <button
+          type="button"
+          class="page__empty-cta"
+          (click)="openAddSheet()"
+        >
+          Vincular primeiro time
+        </button>
+      }
+    </app-empty-state>
+  } @else {
+    <div class="page__grid" [@listStagger]="linkedTeams().length">
+      @for (t of linkedTeams(); track t.teamId) {
+        <article class="ttcard">
+          @if (canEdit()) {
+            <button
+              type="button"
+              class="ttcard__remove"
+              (click)="requestDetach(t)"
+              [attr.aria-label]="'Remover ' + t.name + ' do torneio'"
+            >
+              <lucide-icon [img]="trashIcon" [size]="14" />
+            </button>
+          }
+          <app-team-badge
+            [name]="t.name"
+            [shortName]="t.shortName"
+            [badgeUrl]="t.badgeUrl"
+            [primaryColor]="t.primaryColor"
+            [secondaryColor]="t.secondaryColor"
+            [size]="72"
+          />
+          <div class="ttcard__body">
+            <h3 class="ttcard__name">{{ t.name }}</h3>
+            @if (t.shortName) {
+              <p class="ttcard__short">{{ t.shortName }}</p>
+            }
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>
+
+@if (canEdit() && !loading() && linkedTeams().length > 0) {
+  <app-fab
+    ariaLabel="Vincular novo time"
+    label="Vincular time"
+    [icon]="plusIcon"
+    (buttonClick)="openAddSheet()"
+  />
+}
+
+@if (addSheetOpen()) {
+  <div class="sheet" role="dialog" aria-modal="true">
+    <div
+      class="sheet__backdrop"
+      (click)="closeAddSheet()"
+      aria-hidden="true"
+      @backdropFade
+    ></div>
+    <div class="sheet__content" @sheetSlideUp>
+      <header class="sheet__header">
+        <h2 class="sheet__title">Vincular time</h2>
+        <button
+          type="button"
+          class="sheet__close"
+          (click)="closeAddSheet()"
+          aria-label="Fechar"
+        >
+          <lucide-icon [img]="xIcon" [size]="18" />
+        </button>
+      </header>
+
+      @if (loadingAvailable()) {
+        <div class="sheet__loading">
+          @for (i of [1, 2, 3]; track i) {
+            <div class="u-skeleton sheet__skeleton-row"></div>
+          }
+        </div>
+      } @else if (availableTeams().length === 0) {
+        <div class="sheet__empty">
+          <p class="sheet__empty-text">
+            Todos os seus times já estão vinculados, ou você ainda não
+            cadastrou nenhum.
+          </p>
+          <a
+            routerLink="/teams/new"
+            class="sheet__cta"
+            (click)="closeAddSheet()"
+          >
+            Cadastrar novo time
+          </a>
+        </div>
+      } @else {
+        <ul class="sheet__list">
+          @for (team of availableTeams(); track team.id) {
+            <li>
+              <button
+                type="button"
+                class="sheet__team"
+                [class.sheet__team--loading]="attachingTeamId() === team.id"
+                [disabled]="attachingTeamId() !== null"
+                (click)="attach(team)"
+              >
+                <app-team-badge
+                  [name]="team.name"
+                  [shortName]="team.shortName"
+                  [badgeUrl]="team.badgeUrl"
+                  [primaryColor]="team.primaryColor"
+                  [secondaryColor]="team.secondaryColor"
+                  [size]="44"
+                />
+                <div class="sheet__team-info">
+                  <span class="sheet__team-name">{{ team.name }}</span>
+                  @if (team.shortName) {
+                    <span class="sheet__team-short">{{ team.shortName }}</span>
+                  }
+                </div>
+                @if (attachingTeamId() === team.id) {
+                  <span class="sheet__spinner" aria-hidden="true"></span>
+                } @else {
+                  <lucide-icon
+                    class="sheet__team-icon"
+                    [img]="plusIcon"
+                    [size]="18"
+                  />
+                }
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  </div>
+}
+
+<app-confirm-dialog
+  [open]="confirmDetach() !== null"
+  title="Desvincular time?"
+  [description]="detachDescription()"
+  confirmLabel="Desvincular"
+  variant="destructive"
+  [loading]="detaching()"
+  (confirmed)="confirmDetachAction()"
+  (cancelled)="cancelDetach()"
+/>

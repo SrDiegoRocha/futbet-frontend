@@ -1,0 +1,25 @@
+<div
+  class="code-input"
+  [class.code-input--error]="errorState()"
+  [class.code-input--disabled]="disabled()"
+>
+  @for (i of indices(); track i) {
+    <input
+      #cell
+      type="text"
+      class="code-input__cell"
+      maxlength="1"
+      autocomplete="one-time-code"
+      inputmode="text"
+      spellcheck="false"
+      [value]="chars()[i]"
+      [disabled]="disabled()"
+      [attr.aria-label]="'Caractere ' + (i + 1) + ' do código'"
+      [attr.aria-invalid]="errorState() ? 'true' : null"
+      (input)="handleInput(i, $event)"
+      (keydown)="handleKeydown(i, $event)"
+      (paste)="handlePaste($event)"
+      (focus)="handleFocus($event)"
+    />
+  }
+</div>

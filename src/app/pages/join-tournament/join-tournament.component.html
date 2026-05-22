@@ -1,0 +1,38 @@
+<section class="page">
+  <app-page-header
+    title="Entrar em torneio"
+    subtitle="Digite o código que você recebeu"
+    backTo="/tournaments"
+  />
+
+  <div class="join">
+    <p class="join__hint">
+      Cole ou digite o código de {{ codeLength }} caracteres do convite.
+    </p>
+
+    <app-code-input
+      #codeInput
+      [length]="codeLength"
+      [autoFocus]="true"
+      [errorState]="hasError()"
+      [disabled]="submitting()"
+      (valueChange)="onCodeChange($event)"
+      (complete)="onCodeComplete($event)"
+    />
+
+    @if (errorMessage(); as err) {
+      <div class="join__alert" role="alert">{{ err }}</div>
+    }
+
+    <app-button
+      variant="primary"
+      size="lg"
+      [fullWidth]="true"
+      [disabled]="!canSubmit()"
+      [loading]="submitting()"
+      (buttonClick)="submit()"
+    >
+      Entrar no torneio
+    </app-button>
+  </div>
+</section>

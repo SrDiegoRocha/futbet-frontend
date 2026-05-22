@@ -1,0 +1,225 @@
+<section class="page">
+  <app-page-header
+    title="Partidas"
+    [subtitle]="phase()?.name ?? ''"
+    [backTo]="backToHref()"
+  />
+
+  @if (loading()) {
+    <div class="page__skeleton">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="u-skeleton page__skeleton-row"></div>
+      }
+    </div>
+  } @else if (loadError(); as err) {
+    <div class="page__error" role="alert">
+      <p class="page__error-text">{{ err }}</p>
+    </div>
+  } @else if (matches().length === 0) {
+    <app-empty-state
+      [icon]="calendarIcon"
+      title="Nenhuma partida ainda"
+      [description]="
+        canCreateMatch()
+          ? 'Crie partidas manualmente para esta fase.'
+          : 'As partidas desta fase aparecem aqui depois de criadas ou geradas pelo organizador.'
+      "
+    >
+      @if (canGenerate()) {
+        <button
+          type="button"
+          class="page__empty-cta page__empty-cta--filled"
+          (click)="openGenerateDialog()"
+        >
+          <lucide-icon [img]="sparklesIcon" [size]="16" />
+          {{ generateLabel() }}
+        </button>
+      }
+      @if (canCreateMatch() && newMatchHref(); as href) {
+        <a class="page__empty-cta" [routerLink]="href">
+          Criar primeira partida
+        </a>
+      }
+    </app-empty-state>
+  } @else {
+    @if (canGenerate() && isKnockoutPhase()) {
+      <div class="generate-banner">
+        <p class="generate-banner__text">
+          Pronto para gerar a próxima rodada do mata-mata.
+        </p>
+        <app-button
+          variant="primary"
+          size="md"
+          (buttonClick)="openGenerateDialog()"
+        >
+          {{ generateLabel() }}
+        </app-button>
+      </div>
+    }
+
+    <div class="filters">
+      <div class="filters__row" role="tablist" aria-label="Filtro de rodada">
+        <button
+          type="button"
+          role="tab"
+          class="filters__chip"
+          [class.filters__chip--active]="selectedRound() === null"
+          [attr.aria-selected]="selectedRound() === null"
+          (click)="selectRound(null)"
+        >
+          Todas as rodadas
+        </button>
+        @for (round of rounds(); track round) {
+          <button
+            type="button"
+            role="tab"
+            class="filters__chip"
+            [class.filters__chip--active]="selectedRound() === round"
+            [attr.aria-selected]="selectedRound() === round"
+            (click)="selectRound(round)"
+          >
+            Rodada {{ round + 1 }}
+          </button>
+        }
+      </div>
+
+      @if (groups().length > 0) {
+        <div class="filters__row" role="tablist" aria-label="Filtro de grupo">
+          <button
+            type="button"
+            role="tab"
+            class="filters__chip filters__chip--secondary"
+            [class.filters__chip--active]="selectedGroupId() === null"
+            [attr.aria-selected]="selectedGroupId() === null"
+            (click)="selectGroup(null)"
+          >
+            Todos os grupos
+          </button>
+          @for (group of groups(); track group.id) {
+            <button
+              type="button"
+              role="tab"
+              class="filters__chip filters__chip--secondary"
+              [class.filters__chip--active]="selectedGroupId() === group.id"
+              [attr.aria-selected]="selectedGroupId() === group.id"
+              (click)="selectGroup(group.id)"
+            >
+              Grupo {{ group.name }}
+            </button>
+          }
+        </div>
+      }
+    </div>
+
+    @if (filteredMatches().length === 0) {
+      <app-empty-state
+        [icon]="calendarIcon"
+        title="Nenhuma partida neste filtro"
+        description="Tente outro filtro ou limpe as opções."
+      />
+    } @else {
+      <div class="rounds" [@listStagger]="filteredMatches().length">
+        @for (entry of matchesByRound(); track entry.round) {
+          <section class="round">
+            <header class="round__header">
+              <h2 class="round__title">Rodada {{ entry.round + 1 }}</h2>
+              <span class="round__count">
+                {{ entry.matches.length }}
+                {{ entry.matches.length === 1 ? 'partida' : 'partidas' }}
+              </span>
+            </header>
+
+            <ul class="round__matches">
+              @for (match of entry.matches; track match.id) {
+                <li>
+                  <a
+                    class="match-card"
+                    [routerLink]="matchDetailLink(match)"
+                    [class.match-card--cancelled]="match.status === 'CANCELLED'"
+                  >
+                    <header class="match-card__top">
+                      @if (match.groupName) {
+                        <span class="match-card__group">
+                          Grupo {{ match.groupName }}
+                        </span>
+                      }
+                      <span class="match-card__time">
+                        {{ formatScheduledAt(match.scheduledAt) }}
+                      </span>
+                      <span [class]="statusClass(match.status)">
+                        {{ statusLabel(match.status) }}
+                      </span>
+                    </header>
+
+                    <div class="match-card__center">
+                      <div class="match-card__side match-card__side--home">
+                        <app-team-badge
+                          [name]="match.homeTeam.name"
+                          [shortName]="match.homeTeam.shortName"
+                          [badgeUrl]="match.homeTeam.badgeUrl"
+                          [size]="36"
+                        />
+                        <span class="match-card__team">
+                          {{ match.homeTeam.name }}
+                        </span>
+                      </div>
+
+                      <div
+                        class="match-card__score"
+                        [class.match-card__score--cancelled]="
+                          match.status === 'CANCELLED'
+                        "
+                      >
+                        @if (
+                          match.homeScore !== null && match.awayScore !== null
+                        ) {
+                          <span>{{ match.homeScore }}</span>
+                          <span class="match-card__score-sep">×</span>
+                          <span>{{ match.awayScore }}</span>
+                        } @else {
+                          <span class="match-card__score-placeholder">vs</span>
+                        }
+                      </div>
+
+                      <div class="match-card__side match-card__side--away">
+                        <app-team-badge
+                          [name]="match.awayTeam.name"
+                          [shortName]="match.awayTeam.shortName"
+                          [badgeUrl]="match.awayTeam.badgeUrl"
+                          [size]="36"
+                        />
+                        <span class="match-card__team">
+                          {{ match.awayTeam.name }}
+                        </span>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              }
+            </ul>
+          </section>
+        }
+      </div>
+    }
+  }
+</section>
+
+@if (canCreateMatch() && matches().length > 0 && newMatchHref(); as href) {
+  <app-fab
+    [routerPath]="href"
+    ariaLabel="Criar nova partida"
+    label="Nova partida"
+    [icon]="plusIcon"
+  />
+}
+
+<app-confirm-dialog
+  [open]="generateDialogOpen()"
+  [title]="generateLabel() + '?'"
+  [description]="generateDescription()"
+  [confirmLabel]="generateLabel()"
+  cancelLabel="Voltar"
+  [loading]="generating()"
+  (confirmed)="confirmGenerate()"
+  (cancelled)="closeGenerateDialog()"
+/>

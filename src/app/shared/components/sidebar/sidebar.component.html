@@ -29,7 +29,33 @@
       <lucide-icon [img]="shieldIcon" [size]="20" />
       <span>Times</span>
     </a>
+    <a
+      class="sidebar__item"
+      routerLink="/predictions/upcoming"
+      routerLinkActive="sidebar__item--active"
+    >
+      <lucide-icon [img]="bellIcon" [size]="20" />
+      <span>Próximos palpites</span>
+    </a>
   </nav>
+
+  <a
+    class="sidebar__action"
+    routerLink="/join"
+    routerLinkActive="sidebar__action--active"
+  >
+    <lucide-icon [img]="ticketIcon" [size]="18" />
+    <span>Entrar com código</span>
+  </a>
+
+  <a
+    class="sidebar__action"
+    routerLink="/settings"
+    routerLinkActive="sidebar__action--active"
+  >
+    <lucide-icon [img]="settingsIcon" [size]="18" />
+    <span>Configurações</span>
+  </a>
 
   <div class="sidebar__footer">
     <button

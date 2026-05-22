@@ -29,6 +29,38 @@
   color: inherit;
 }
 
+.app-bar__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.app-bar__icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  text-decoration: none;
+  transition:
+    background-color var(--duration-fast) var(--easing-default),
+    color var(--duration-fast) var(--easing-default);
+}
+
+.app-bar__icon-btn:hover {
+  background-color: var(--bg-muted);
+  color: var(--text-primary);
+}
+
+.app-bar__icon-btn:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
 .app-bar__avatar-btn {
   border-radius: var(--radius-full);
   padding: 0;

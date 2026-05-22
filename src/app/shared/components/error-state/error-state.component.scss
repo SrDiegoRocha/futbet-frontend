@@ -1,0 +1,95 @@
+.error-state {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  column-gap: var(--space-3);
+  row-gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  background-color: color-mix(in srgb, var(--danger) 8%, var(--bg-surface));
+  border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent);
+  border-radius: var(--radius-lg);
+}
+
+[data-theme='dark'] .error-state {
+  background-color: color-mix(in srgb, var(--danger) 14%, var(--bg-elevated));
+}
+
+.error-state__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background-color: color-mix(in srgb, var(--danger) 16%, transparent);
+  color: var(--danger);
+}
+
+.error-state__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.error-state__title {
+  margin: 0;
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.error-state__message {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: var(--lh-base);
+}
+
+.error-state__retry {
+  grid-column: 1 / -1;
+  justify-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--danger);
+  background-color: transparent;
+  color: var(--danger);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+
+.error-state__retry:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--danger) 12%, transparent);
+}
+
+.error-state__retry:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error-state__retry-icon--spinning {
+  animation: error-state-spin 900ms linear infinite;
+}
+
+@keyframes error-state-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (min-width: 640px) {
+  .error-state__retry {
+    grid-column: auto;
+    justify-self: end;
+    align-self: center;
+  }
+
+  .error-state {
+    grid-template-columns: auto 1fr auto;
+  }
+}

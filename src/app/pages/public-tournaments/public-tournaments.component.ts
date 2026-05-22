@@ -8,6 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { RouterLink } from '@angular/router';
 import { ApiException } from '@core/errors/api-error';
 import { ITournamentResponse } from '@core/interfaces/tournament.interface';
 import { TournamentsService } from '@core/services/tournaments.service';
@@ -20,7 +21,12 @@ import { Globe } from 'lucide-angular';
 @Component({
   selector: 'app-public-tournaments',
   standalone: true,
-  imports: [TournamentCardComponent, EmptyStateComponent, ButtonComponent],
+  imports: [
+    TournamentCardComponent,
+    EmptyStateComponent,
+    ButtonComponent,
+    RouterLink,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './public-tournaments.component.html',
   styleUrl: './public-tournaments.component.scss',

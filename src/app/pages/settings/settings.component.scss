@@ -1,0 +1,196 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  max-width: 640px;
+  margin-inline: auto;
+  width: 100%;
+  padding-bottom: var(--space-12);
+}
+
+.card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+[data-theme='dark'] .card {
+  background-color: var(--bg-elevated);
+}
+
+.card--danger {
+  border-color: color-mix(in srgb, var(--danger) 30%, transparent);
+}
+
+.card__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.card__title {
+  margin: 0;
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.card__subtitle {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: var(--lh-base);
+}
+
+.card__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  align-self: flex-start;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--brand);
+  color: var(--brand);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  text-decoration: none;
+  transition: background-color 160ms ease;
+}
+
+.card__link:hover {
+  background-color: color-mix(in srgb, var(--brand) 12%, transparent);
+}
+
+.session {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.session__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.session__name {
+  margin: 0;
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.session__email {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.session__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+}
+
+.session__role {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: var(--font-semibold);
+}
+
+.session__sep {
+  color: var(--text-tertiary);
+}
+
+.theme-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.theme-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--bg-muted);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease;
+  color: var(--text-primary);
+}
+
+.theme-option:hover {
+  background-color: color-mix(in srgb, var(--brand) 6%, var(--bg-muted));
+}
+
+.theme-option--active {
+  background-color: color-mix(in srgb, var(--brand) 12%, transparent);
+  border-color: var(--brand);
+}
+
+.theme-option__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background-color: var(--bg-surface);
+  color: var(--brand);
+}
+
+[data-theme='dark'] .theme-option__icon {
+  background-color: var(--bg-elevated);
+}
+
+.theme-option__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.theme-option__label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+}
+
+.theme-option__description {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+}
+
+.signout-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--danger);
+  background-color: transparent;
+  color: var(--danger);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  align-self: flex-start;
+  transition: background-color 160ms ease;
+}
+
+.signout-btn:hover {
+  background-color: color-mix(in srgb, var(--danger) 12%, transparent);
+}

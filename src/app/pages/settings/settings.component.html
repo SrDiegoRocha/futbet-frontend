@@ -1,0 +1,79 @@
+<section class="page">
+  <app-page-header title="Configurações" backTo="/tournaments" />
+
+  @if (user(); as u) {
+    <article class="card">
+      <header class="card__header">
+        <h3 class="card__title">Sessão</h3>
+      </header>
+      <div class="session">
+        <app-avatar [name]="userName()" [imageUrl]="userAvatar()" [size]="56" />
+        <div class="session__info">
+          <p class="session__name">{{ userName() }}</p>
+          <p class="session__email">{{ userEmail() }}</p>
+          <div class="session__meta">
+            <span class="session__role">{{ userRoleLabel() }}</span>
+            @if (memberSinceLabel()) {
+              <span class="session__sep" aria-hidden="true">·</span>
+              <span class="session__since">desde {{ memberSinceLabel() }}</span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <a class="card__link" routerLink="/profile">
+        <lucide-icon [img]="userIcon" [size]="16" />
+        Ver perfil completo
+      </a>
+    </article>
+  }
+
+  <article class="card">
+    <header class="card__header">
+      <h3 class="card__title">Aparência</h3>
+      <p class="card__subtitle">Sua escolha fica salva neste dispositivo.</p>
+    </header>
+
+    <div class="theme-options" role="radiogroup" aria-label="Tema do aplicativo">
+      @for (option of themeOptions; track option.mode) {
+        <button
+          type="button"
+          class="theme-option"
+          [class.theme-option--active]="themeMode() === option.mode"
+          role="radio"
+          [attr.aria-checked]="themeMode() === option.mode"
+          (click)="setTheme(option.mode)"
+        >
+          <span class="theme-option__icon" aria-hidden="true">
+            <lucide-icon [img]="iconFor(option.iconKey)" [size]="18" />
+          </span>
+          <span class="theme-option__text">
+            <span class="theme-option__label">{{ option.label }}</span>
+            <span class="theme-option__description">
+              {{ option.description }}
+            </span>
+          </span>
+        </button>
+      }
+    </div>
+  </article>
+
+  <article class="card card--danger">
+    <header class="card__header">
+      <h3 class="card__title">Encerrar sessão</h3>
+      <p class="card__subtitle">
+        Tokens deste dispositivo serão descartados. Você poderá entrar novamente
+        com email e senha.
+      </p>
+    </header>
+
+    <button
+      type="button"
+      class="signout-btn"
+      (click)="signOut()"
+    >
+      <lucide-icon [img]="logOutIcon" [size]="16" />
+      Sair da conta
+    </button>
+  </article>
+</section>

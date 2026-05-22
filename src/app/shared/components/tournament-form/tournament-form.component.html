@@ -1,0 +1,240 @@
+<form
+  class="tform"
+  [formGroup]="form"
+  (ngSubmit)="onSubmit()"
+  novalidate
+>
+  @if (statusBanner(); as banner) {
+    <div class="tform__banner" role="status">{{ banner }}</div>
+  }
+
+  @if (serverError(); as err) {
+    <div class="tform__alert" role="alert">{{ err }}</div>
+  }
+
+  <section class="tform__section">
+    <header class="tform__section-header">
+      <h2 class="tform__section-title">Informações</h2>
+      <p class="tform__section-subtitle">Nome e visibilidade do torneio</p>
+    </header>
+
+    <app-input
+      formControlName="name"
+      type="text"
+      label="Nome"
+      placeholder="Ex.: Bolão da Copa"
+      autocomplete="off"
+      [errorText]="nameError()"
+      [required]="true"
+    />
+
+    <app-input
+      formControlName="description"
+      type="text"
+      label="Descrição (opcional)"
+      placeholder="Sobre o que é este torneio?"
+      autocomplete="off"
+      [errorText]="descriptionError()"
+      helper="Até 500 caracteres. Aparece pros participantes."
+    />
+
+    <div class="tform__privacy">
+      <span class="tform__privacy-label" id="tform-privacy-label">Visibilidade</span>
+      <div
+        class="tform__privacy-options"
+        role="radiogroup"
+        aria-labelledby="tform-privacy-label"
+      >
+        <button
+          type="button"
+          class="tform__privacy-option"
+          [class.tform__privacy-option--active]="privacy() === 'PUBLIC'"
+          [disabled]="form.controls.privacy.disabled"
+          (click)="setPrivacy('PUBLIC')"
+          role="radio"
+          [attr.aria-checked]="privacy() === 'PUBLIC'"
+        >
+          <span class="tform__privacy-icon" aria-hidden="true">
+            <lucide-icon [img]="globeIcon" [size]="20" />
+          </span>
+          <span class="tform__privacy-name">Público</span>
+          <span class="tform__privacy-desc">Aparece na lista de torneios públicos</span>
+        </button>
+        <button
+          type="button"
+          class="tform__privacy-option"
+          [class.tform__privacy-option--active]="privacy() === 'PRIVATE'"
+          [disabled]="form.controls.privacy.disabled"
+          (click)="setPrivacy('PRIVATE')"
+          role="radio"
+          [attr.aria-checked]="privacy() === 'PRIVATE'"
+        >
+          <span class="tform__privacy-icon" aria-hidden="true">
+            <lucide-icon [img]="lockIcon" [size]="20" />
+          </span>
+          <span class="tform__privacy-name">Privado</span>
+          <span class="tform__privacy-desc">Só entra com código de convite</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="tform__section">
+    <header class="tform__section-header">
+      <h2 class="tform__section-title">Capacidade</h2>
+      <p class="tform__section-subtitle">
+        Limites de participantes e times — deixe em branco para sem limite
+      </p>
+    </header>
+
+    <div class="tform__grid-2">
+      <app-input
+        formControlName="maxParticipants"
+        type="number"
+        label="Máx. participantes"
+        placeholder="Sem limite"
+        inputmode="numeric"
+        [errorText]="maxParticipantsError()"
+      />
+      <app-input
+        formControlName="maxTeams"
+        type="number"
+        label="Máx. de times"
+        placeholder="Sem limite"
+        inputmode="numeric"
+        [errorText]="maxTeamsError()"
+      />
+    </div>
+  </section>
+
+  <section class="tform__section" formGroupName="settings">
+    <header class="tform__section-header">
+      <h2 class="tform__section-title">Pontuação</h2>
+      <p class="tform__section-subtitle">
+        Quantos pontos cada situação rende para os palpites
+      </p>
+    </header>
+
+    <div class="tform__points-section">
+      <h3 class="tform__subsection">Resultado dos jogos</h3>
+      <div class="tform__grid-3">
+        <app-input
+          formControlName="winPoints"
+          type="number"
+          label="Vitória"
+          inputmode="numeric"
+          [errorText]="pointsError('winPoints')"
+          [required]="true"
+        />
+        <app-input
+          formControlName="drawPoints"
+          type="number"
+          label="Empate"
+          inputmode="numeric"
+          [errorText]="pointsError('drawPoints')"
+          [required]="true"
+        />
+        <app-input
+          formControlName="lossPoints"
+          type="number"
+          label="Derrota"
+          inputmode="numeric"
+          [errorText]="pointsError('lossPoints')"
+          [required]="true"
+        />
+      </div>
+    </div>
+
+    <div class="tform__points-section">
+      <h3 class="tform__subsection">Palpites</h3>
+      <div class="tform__grid-3">
+        <app-input
+          formControlName="exactScorePoints"
+          type="number"
+          label="Placar exato"
+          inputmode="numeric"
+          [errorText]="pointsError('exactScorePoints')"
+          [required]="true"
+        />
+        <app-input
+          formControlName="winnerPoints"
+          type="number"
+          label="Acertou vencedor"
+          inputmode="numeric"
+          [errorText]="pointsError('winnerPoints')"
+          [required]="true"
+        />
+        <app-input
+          formControlName="wrongPoints"
+          type="number"
+          label="Errou tudo"
+          inputmode="numeric"
+          [errorText]="pointsError('wrongPoints')"
+          [required]="true"
+        />
+      </div>
+    </div>
+  </section>
+
+  <section class="tform__section">
+    <header class="tform__section-header">
+      <h2 class="tform__section-title">Critérios de desempate</h2>
+      <p class="tform__section-subtitle">
+        Arraste para reordenar — primeira regra é aplicada primeiro
+      </p>
+    </header>
+
+    <app-tiebreak-selector
+      [value]="tiebreak()"
+      [disabled]="isFullyDisabled()"
+      (valueChange)="setTiebreak($event)"
+    />
+    @if (tiebreakInvalid()) {
+      <p class="tform__field-error" role="alert">
+        Selecione ao menos um critério de desempate.
+      </p>
+    }
+  </section>
+
+  <div class="tform__actions">
+    <app-button
+      type="button"
+      variant="ghost"
+      size="lg"
+      [disabled]="submitting() || deleting()"
+      (buttonClick)="onCancel()"
+    >
+      Cancelar
+    </app-button>
+    <app-button
+      type="submit"
+      variant="primary"
+      size="lg"
+      [loading]="submitting()"
+      [disabled]="deleting() || isFullyDisabled()"
+    >
+      {{ submitLabel() }}
+    </app-button>
+  </div>
+
+  @if (mode() === 'edit') {
+    <div class="tform__danger">
+      <p class="tform__danger-title">Zona de perigo</p>
+      <p class="tform__danger-text">
+        Excluir o torneio é uma ação permanente do seu ponto de vista. O
+        torneio some das listas e não pode mais ser acessado pelos
+        participantes.
+      </p>
+      <app-button
+        type="button"
+        variant="destructive"
+        size="md"
+        [loading]="deleting()"
+        [disabled]="submitting()"
+        (buttonClick)="onDelete()"
+      >
+        Excluir torneio
+      </app-button>
+    </div>
+  }
+</form>

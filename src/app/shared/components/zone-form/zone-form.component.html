@@ -1,0 +1,220 @@
+<form
+  class="zform"
+  [formGroup]="form"
+  (ngSubmit)="onSubmit()"
+  novalidate
+>
+  @if (statusBanner(); as banner) {
+    <div class="zform__banner" role="status">{{ banner }}</div>
+  }
+
+  @if (serverError(); as err) {
+    <div class="zform__alert" role="alert">{{ err }}</div>
+  }
+
+  <section class="zform__section">
+    <header class="zform__section-header">
+      <h2 class="zform__section-title">Informações</h2>
+      <p class="zform__section-subtitle">Identifique esta zona</p>
+    </header>
+
+    <app-input
+      formControlName="name"
+      type="text"
+      label="Nome"
+      placeholder="Ex.: Classificados pra próxima fase"
+      autocomplete="off"
+      [errorText]="nameError()"
+      [required]="true"
+    />
+  </section>
+
+  <section class="zform__section">
+    <header class="zform__section-header">
+      <h2 class="zform__section-title">Modo de seleção</h2>
+      <p class="zform__section-subtitle">
+        Como os times desta zona são escolhidos
+      </p>
+    </header>
+    <div
+      class="zform__options"
+      role="radiogroup"
+      aria-label="Modo de seleção"
+    >
+      <button
+        type="button"
+        class="zform__option"
+        [class.zform__option--active]="selectionMode() === 'ALL'"
+        [disabled]="isLocked()"
+        (click)="setSelectionMode('ALL')"
+        role="radio"
+        [attr.aria-checked]="selectionMode() === 'ALL'"
+      >
+        <span class="zform__option-icon" aria-hidden="true">
+          <lucide-icon [img]="arrowRightIcon" [size]="18" />
+        </span>
+        <span class="zform__option-name">Posições corridas</span>
+        <span class="zform__option-desc">
+          Pega todos os times entre a posição inicial e final
+        </span>
+      </button>
+      <button
+        type="button"
+        class="zform__option"
+        [class.zform__option--active]="selectionMode() === 'BEST_RANKED'"
+        [disabled]="isLocked() || !canUseBestRanked()"
+        (click)="setSelectionMode('BEST_RANKED')"
+        role="radio"
+        [attr.aria-checked]="selectionMode() === 'BEST_RANKED'"
+      >
+        <span class="zform__option-icon" aria-hidden="true">
+          <lucide-icon [img]="awardIcon" [size]="18" />
+        </span>
+        <span class="zform__option-name">Melhor classificado</span>
+        <span class="zform__option-desc">
+          @if (canUseBestRanked()) {
+            Compara uma posição entre todos os grupos
+          } @else {
+            Disponível só em fases de grupos
+          }
+        </span>
+      </button>
+    </div>
+  </section>
+
+  <section class="zform__section">
+    <header class="zform__section-header">
+      <h2 class="zform__section-title">Faixa de posições</h2>
+      <p class="zform__section-subtitle">
+        @if (isBestRanked()) {
+          Posição que será comparada entre os grupos
+        } @else {
+          Da posição X até Y na classificação
+        }
+      </p>
+    </header>
+
+    <div class="zform__grid-2">
+      <app-input
+        formControlName="fromPosition"
+        type="number"
+        label="Posição inicial"
+        inputmode="numeric"
+        [errorText]="fromPositionError()"
+        [required]="true"
+      />
+      @if (!isBestRanked()) {
+        <app-input
+          formControlName="toPosition"
+          type="number"
+          label="Posição final"
+          inputmode="numeric"
+          [errorText]="toPositionError()"
+          [required]="true"
+        />
+      } @else {
+        <app-input
+          formControlName="toPosition"
+          type="number"
+          label="Posição (igual à inicial)"
+          inputmode="numeric"
+          [errorText]="toPositionError()"
+          [required]="true"
+          helper="No modo Melhor classificado, deve ser igual"
+        />
+      }
+    </div>
+
+    @if (rangeError(); as err) {
+      <p class="zform__field-error" role="alert">{{ err }}</p>
+    }
+
+    @if (isBestRanked()) {
+      <app-input
+        formControlName="bestRankedCount"
+        type="number"
+        label="Quantos times serão escolhidos"
+        placeholder="Ex.: 2"
+        inputmode="numeric"
+        [errorText]="bestRankedCountError()"
+        [required]="true"
+        [helper]="
+          'Entre 1 e o número de grupos da fase (' + maxBestRanked() + ').'
+        "
+      />
+    }
+  </section>
+
+  <section class="zform__section">
+    <header class="zform__section-header">
+      <h2 class="zform__section-title">Destino</h2>
+      <p class="zform__section-subtitle">
+        Para onde os times desta zona vão depois da fase
+      </p>
+    </header>
+
+    <div class="zform__select-field">
+      <label class="zform__select-label" for="zone-next-phase">
+        Próxima fase
+      </label>
+      <select
+        id="zone-next-phase"
+        class="zform__select"
+        formControlName="nextPhaseId"
+      >
+        <option [ngValue]="null">Eliminado (sem próxima fase)</option>
+        @for (phase of futurePhases(); track phase.id) {
+          <option [ngValue]="phase.id">
+            {{ phase.position + 1 }}. {{ phase.name }}
+          </option>
+        }
+      </select>
+      @if (futurePhases().length === 0) {
+        <p class="zform__select-helper">
+          Não há fases posteriores configuradas. Crie outra fase no torneio
+          para usar como destino.
+        </p>
+      }
+    </div>
+  </section>
+
+  <div class="zform__actions">
+    <app-button
+      type="button"
+      variant="ghost"
+      size="lg"
+      [disabled]="submitting() || deleting()"
+      (buttonClick)="onCancel()"
+    >
+      Cancelar
+    </app-button>
+    <app-button
+      type="submit"
+      variant="primary"
+      size="lg"
+      [loading]="submitting()"
+      [disabled]="deleting() || isLocked()"
+    >
+      {{ submitLabel() }}
+    </app-button>
+  </div>
+
+  @if (mode() === 'edit' && !isLocked()) {
+    <div class="zform__danger">
+      <p class="zform__danger-title">Zona de perigo</p>
+      <p class="zform__danger-text">
+        Excluir esta zona é permanente.
+      </p>
+      <app-button
+        type="button"
+        variant="destructive"
+        size="md"
+        [loading]="deleting()"
+        [disabled]="submitting()"
+        (buttonClick)="onDelete()"
+      >
+        Excluir zona
+      </app-button>
+    </div>
+  }
+</form>
